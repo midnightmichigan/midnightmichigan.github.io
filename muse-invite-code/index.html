@@ -58,5 +58,44 @@
   <h2>How to redeem it</h2>
   <ol>
     <li>Go to <a href="https://muse.ai/join" target="_blank" rel="noopener">muse.ai/join</a> and create your Muse account.</li>
-    <l
-...[truncated 2127 chars]
+    <li>Open <strong>Settings</strong>, then <strong>General</strong>, and choose <strong>Redeem invite code</strong>.</li>
+    <li>Enter <code class="inline">B3NYLG</code> and confirm.</li>
+    <li>Check your token balance — the 1 billion bonus tokens land in your account.</li>
+  </ol>
+
+  <div class="note">
+    <strong>Two things to know:</strong> the Redeem option only exists for the first
+    <strong>48 hours</strong> after you create your account, then it disappears.
+    Muse is currently open to new accounts in the <strong>United States and Canada</strong>.
+  </div>
+
+  <h2>What it costs</h2>
+  <p>Nothing. Redeeming a code is free, and the tokens have no cash value — they're
+  usage credit for the Muse agent itself. Nobody will ever ask for your password or
+  card details to "register for you." If anyone does, walk away.</p>
+
+  <footer>
+    Disclosure: <code class="inline">B3NYLG</code> is my personal invite code, so I receive
+    the same 1 billion token bonus when you redeem it. Not affiliated with Meta.
+  </footer>
+
+</div>
+<script>
+function copyCode() {
+  var code = document.getElementById('code').textContent.trim();
+  var done = document.getElementById('copied');
+  function ok() { done.textContent = 'Copied — paste it in Muse Settings within 48 hours of joining.'; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(ok, function() { fallback(); });
+  } else { fallback(); }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = code; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); ok(); }
+    catch (e) { done.textContent = 'Copy failed — the code is: ' + code; }
+    document.body.removeChild(ta);
+  }
+}
+</script>
+</body>
+</html>
