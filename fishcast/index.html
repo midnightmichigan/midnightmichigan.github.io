@@ -145,6 +145,7 @@
         <div class="forecast-grid">
           <form class="card form-card" id="forecastForm">
             <div class="section-head"><div><h2>Build your fishing forecast</h2><p>Use the current conditions where you plan to fish.</p></div><span class="step">01 / INPUT</span></div>
+            <div style="margin-bottom:12px"><button class="secondary" type="button" id="useLocation">Use my current conditions</button><div id="locStatus" class="copied" role="status" style="margin-top:6px"></div></div>
             <div class="fields">
               <div class="field full"><label for="target">Target species</label><input id="target" list="fishList" placeholder="Try walleye, barramundi, carp…" autocomplete="off" required><datalist id="fishList"></datalist></div>
               <div class="field"><label for="habitat">Water type</label><select id="habitat"><option value="lake">Lake / reservoir</option><option value="river">River / stream</option><option value="pond">Pond / canal</option><option value="coast">Coast / estuary</option><option value="offshore">Offshore</option></select></div>
@@ -278,6 +279,37 @@
   function escapeHtml(s){return s.replace(/[&<>'"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[c]})}
   function renderSpecies(q){q=(q||'').toLowerCase();var visible=fish.filter(function(f){return (f.n+' '+f.note+' '+f.h.join(' ')+' '+f.t.join(' ')).toLowerCase().indexOf(q)>-1});$('#speciesGrid').innerHTML=visible.map(function(f){return'<article class="card species-card"><span class="tag">'+escapeHtml(f.h.join(' · '))+'</span><h3>'+escapeHtml(f.n)+'</h3><p>'+escapeHtml(f.note)+'. '+escapeHtml(f.bait)+'</p><div class="temps">SWEET SPOT '+f.min+'–'+f.max+'°F · '+Math.round((f.min-32)*5/9)+'–'+Math.round((f.max-32)*5/9)+'°C</div>'+gearCta(f)+'</article>'}).join('');$('#noSpecies').style.display=visible.length?'none':'block'}
   $('#speciesSearch').addEventListener('input',function(){renderSpecies(this.value)});renderSpecies('');
+  $('#useLocation').addEventListener('click',function(){
+    var status=$('#locStatus');
+    if(!navigator.geolocation){status.textContent='Location not available in this browser — enter conditions manually.';return}
+    status.textContent='Getting your location…';
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var lat=pos.coords.latitude,lon=pos.coords.longitude;
+      status.textContent='Fetching live conditions…';
+      var url='https://api.open-meteo.com/v1/forecast?latitude='+lat.toFixed(4)+'&longitude='+lon.toFixed(4)+'&current=temperature_2m,weather_code,wind_speed_10m&temperature_unit=fahrenheit&timezone=auto';
+      fetch(url).then(function(r){return r.json()}).then(function(d){
+        var cur=d.current,airF=Math.round(cur.temperature_2m),code=cur.weather_code,windKmh=cur.wind_speed_10m,w='clear';
+        if(code===0||code===1)w='clear';
+        else if(code===2||code===3||code===45||code===48)w='overcast';
+        else if((code>=51&&code<=57)||(code>=61&&code<=65)||(code>=80&&code<=82))w='light-rain';
+        else if((code>=66&&code<=67)||(code>=71&&code<=77)||(code>=85&&code<=86))w='front';
+        else if(code>=95)w='windy';
+        if(windKmh>25)w='windy';
+        $('#weather').value=w;
+        var waterF=Math.round(airF*0.75+55*0.25);
+        $('#temp').value=currentUnit==='C'?Math.round((waterF-32)*5/9):waterF;
+        var m=new Date().getMonth(),south=lat<0,season;
+        if(m===11||m===0||m===1)season=south?'Summer':'Winter';
+        else if(m>=2&&m<=4)season=south?'Autumn':'Spring';
+        else if(m>=5&&m<=7)season=south?'Winter':'Summer';
+        else season=south?'Spring':'Autumn';
+        $('#season').value=season;
+        var h=new Date().getHours();
+        $('#time').value=(h>=5&&h<8)?'sunrise':(h>=8&&h<17)?'day':(h>=17&&h<20)?'sunset':'night';
+        status.textContent='Conditions loaded — air '+airF+'°F, water ~'+waterF+'°F (estimated from air temp). Adjust anything I got wrong.';
+      }).catch(function(){status.textContent='Could not fetch conditions — enter them manually.'});
+    },function(){status.textContent='Location blocked — enter conditions manually.'});
+  });
 })();
 </script>
 </body>
