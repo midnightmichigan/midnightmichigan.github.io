@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <meta name="application-name" content="Fishcast" />
+  <meta name="description" content="Plan your next fishing trip with a free bite forecast based on target species, water temperature, habitat, season, weather, clarity, and time of day." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:site_name" content="Fishcast" />
+  <meta property="og:title" content="Fishing Bite Forecast Tool by Species | Fishcast" />
+  <meta property="og:description" content="Check fishing conditions by species, compare likely alternatives, and build a practical game plan from water temperature, weather, season, and habitat." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Fishing Bite Forecast Tool by Species | Fishcast" />
+  <meta name="twitter:description" content="Get a practical fishing conditions forecast by species, water temperature, habitat, weather, clarity, season, and time of day." />
+  <title>Fishing Bite Forecast Tool by Species | Fishcast</title>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fishcast","applicationCategory":"SportsApplication","operatingSystem":"Any","description":"A free fishing bite forecast and trip-planning tool based on target species, habitat, water temperature, local season, time of day, weather, and water clarity."}</script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+    :root{
+      color-scheme:light dark;
+      --bg:#edf3f1;--paper:#f8fbfa;--ink:#10231e;--muted:#536962;--line:#c7d4cf;
+      --deep:#103f3a;--accent:#e2ff4f;--accent-ink:#172100;--blue:#187a8c;--warn:#b54b2f;
+      --soft:#dfe9e5;--shadow:0 18px 50px rgba(18,53,45,.12);--radius:18px;
+    }
+    @media(prefers-color-scheme:dark){:root{
+      --bg:#091512;--paper:#10211c;--ink:#f1f6f4;--muted:#a4b8b1;--line:#29433b;
+      --deep:#9bdbcb;--accent:#d9f65a;--accent-ink:#172100;--blue:#60bdc7;--warn:#ff9377;
+      --soft:#172e27;--shadow:0 20px 50px rgba(0,0,0,.28)
+    }}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,sans-serif;min-width:0}
+    button,input,select{font:inherit;color:inherit}
+    button,a{touch-action:manipulation}
+    .wrap{width:min(1180px,calc(100% - 32px));margin:auto;padding:24px 0 72px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:36px}
+    .status{display:flex;align-items:center;gap:9px;font:500 12px/1 DM Mono,monospace;color:var(--muted)}
+    .status i{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 22%,transparent)}
+    .tabs{display:flex;gap:5px;padding:5px;background:var(--paper);border:1px solid var(--line);border-radius:999px}
+    .tab{border:0;background:transparent;padding:9px 14px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;color:var(--muted)}
+    .tab.active{background:var(--deep);color:var(--paper)}
+    @media(prefers-color-scheme:dark){.tab.active{color:#08110f}}
+    .panel{display:none}.panel.active{display:block}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:end;margin-bottom:26px}
+    h1,h2,h3,p{margin-top:0}
+    h1{font-size:clamp(40px,7vw,88px);line-height:.91;letter-spacing:-.065em;margin-bottom:18px;max-width:760px}
+    .lead{font-size:clamp(16px,2vw,21px);line-height:1.55;color:var(--muted);max-width:680px;margin-bottom:0}
+    .stamp{justify-self:end;align-self:center;width:180px;height:180px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transform:rotate(5deg);background:var(--paper);box-shadow:var(--shadow)}
+    .stamp svg{width:95px;color:var(--deep)}
+    .card{background:var(--paper);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:var(--radius)}
+    .forecast-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(310px,.72fr);gap:18px;align-items:start}
+    .form-card{padding:24px}
+    .section-head{display:flex;justify-content:space-between;gap:18px;align-items:start;margin-bottom:22px}
+    .section-head h2{font-size:23px;letter-spacing:-.03em;margin-bottom:4px}
+    .section-head p{font-size:13px;color:var(--muted);margin:0}
+    .step{font:500 11px DM Mono,monospace;color:var(--muted);white-space:nowrap}
+    .fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .field{min-width:0}.field.full{grid-column:1/-1}
+    label{display:block;font-size:12px;font-weight:800;margin-bottom:7px;color:var(--muted)}
+    input,select{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:13px 12px;outline:none}
+    input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 18%,transparent)}
+    .temp-wrap{display:flex;gap:8px}.temp-wrap input{min-width:0}.unit{display:flex;padding:4px;background:var(--soft);border-radius:10px;flex:0 0 auto}
+    .unit button{border:0;background:transparent;border-radius:7px;padding:7px 9px;font-weight:800;cursor:pointer;color:var(--muted)}
+    .unit button.active{background:var(--paper);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+    .primary{width:100%;border:0;border-radius:11px;background:var(--accent);color:var(--accent-ink);font-weight:800;padding:15px 20px;margin-top:20px;cursor:pointer;box-shadow:0 6px 0 color-mix(in srgb,var(--accent-ink) 25%,transparent)}
+    .primary:active{transform:translateY(3px);box-shadow:0 3px 0 color-mix(in srgb,var(--accent-ink) 25%,transparent)}
+    .result{min-height:520px;overflow:hidden;position:sticky;top:18px;background:var(--deep);color:#f5fffb;border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)}
+    @media(prefers-color-scheme:dark){.result{color:#081511}}
+    .result-empty{min-height:470px;display:flex;flex-direction:column;justify-content:space-between}
+    .result-empty p{font-size:28px;font-weight:700;line-height:1.18;letter-spacing:-.035em;margin-top:24px}
+    .fish-line{height:160px;display:flex;align-items:center;justify-content:center;position:relative}
+    .fish-line:before{content:"";position:absolute;width:72%;height:1px;background:currentColor;opacity:.25;top:50%;left:0}
+    .fish-line svg{width:155px;position:relative;background:var(--deep);padding:18px}
+    .mini{font:500 11px/1.5 DM Mono,monospace;opacity:.72;text-transform:uppercase;letter-spacing:.08em}
+    .score-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:20px 0 12px}
+    .score{font-size:84px;line-height:.8;letter-spacing:-.08em;font-weight:800}.score small{font-size:22px;letter-spacing:0}
+    .rating{font:500 12px DM Mono,monospace;text-transform:uppercase}
+    .meter{height:11px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;margin-bottom:22px}
+    @media(prefers-color-scheme:dark){.meter{background:rgba(0,0,0,.2)}}
+    .meter span{display:block;height:100%;width:0;background:var(--accent);border-radius:inherit;transition:width .5s ease}
+    .verdict{font-size:27px;line-height:1.15;letter-spacing:-.035em;font-weight:800;margin-bottom:22px}
+    .reason-list{display:grid;gap:9px;margin:0 0 22px;padding:0;list-style:none}
+    .reason-list li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid rgba(255,255,255,.25);padding-top:9px;font-size:13px}
+    @media(prefers-color-scheme:dark){.reason-list li{border-color:rgba(0,0,0,.25)}}
+    .reason-list b{text-align:right}
+    .plan{background:var(--accent);color:var(--accent-ink);padding:15px;border-radius:12px}
+    .plan strong{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+    .plan p{margin:0;font-size:14px;line-height:1.45}
+    .gear-block{display:grid;gap:7px;margin-top:12px}
+    .gear-button{display:inline-flex;align-items:center;justify-content:center;width:100%;border:0;border-radius:9px;background:var(--accent);color:var(--accent-ink);padding:11px 13px;font-size:12px;font-weight:800;text-decoration:none;cursor:pointer}
+    .gear-button:hover{text-decoration:underline;text-underline-offset:3px}
+    .gear-button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+    .gear-disclosure{margin:0;color:var(--muted);font:500 9px/1.45 DM Mono,monospace}
+    .plan .gear-button{background:var(--deep);color:var(--paper)}
+    .plan .gear-disclosure{color:var(--accent-ink);opacity:.72}
+    .alt{margin-top:18px;padding:20px}
+    .alt h3{font-size:16px;margin-bottom:14px}.alt-list{display:flex;flex-wrap:wrap;gap:8px}
+    .alt-chip{background:var(--soft);padding:8px 10px;border-radius:8px;font-size:12px;font-weight:700}
+    .truth{margin-top:18px;padding:14px 16px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font:500 11px/1.55 DM Mono,monospace}
+    .access-intro{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;margin-bottom:22px;align-items:end}
+    .access-intro h1{font-size:clamp(40px,6vw,74px)}
+    .access-note{padding:20px;background:var(--deep);color:#f5fffb;border-radius:14px;font-size:14px;line-height:1.55}
+    @media(prefers-color-scheme:dark){.access-note{color:#081511}}
+    .access-card{display:grid;grid-template-columns:.85fr 1.15fr;overflow:hidden}
+    .access-form{padding:24px;border-right:1px solid var(--line)}
+    .access-output{padding:24px;background:var(--soft)}
+    .access-output h3{font-size:20px;margin-bottom:12px}
+    .checklist{list-style:none;padding:0;margin:18px 0;counter-reset:item}.checklist li{counter-increment:item;display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.45}.checklist li:before{content:counter(item);width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:var(--paper);font:700 11px DM Mono,monospace}
+    .copy-row{display:flex;gap:8px;margin-top:18px}.secondary,.linkbtn{border:1px solid var(--line);background:var(--paper);border-radius:9px;padding:11px 13px;font-weight:800;font-size:12px;cursor:pointer;text-decoration:none;color:var(--ink);display:inline-flex;align-items:center;justify-content:center}.copy-row .secondary{flex:1}.copied{font:500 11px DM Mono,monospace;color:var(--blue);min-height:18px;margin-top:8px}
+    .resource-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.resource{padding:18px}.resource h3{font-size:16px;margin-bottom:7px}.resource p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:14px}.resource .linkbtn{width:100%}
+    .species-head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin-bottom:20px}.species-head h1{font-size:clamp(40px,6vw,72px);margin-bottom:0}.species-search{max-width:330px}.species-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.species-card{padding:18px;box-shadow:none}.species-card .tag{font:500 10px DM Mono,monospace;color:var(--blue);text-transform:uppercase;letter-spacing:.08em}.species-card h3{font-size:19px;margin:7px 0 5px}.species-card p{font-size:12px;line-height:1.45;color:var(--muted);margin:0}.species-card .temps{margin-top:14px;font:500 11px DM Mono,monospace;color:var(--ink)}.species-card .gear-block{margin-top:14px}
+    .no-results{display:none;padding:30px;text-align:center;color:var(--muted)}
+    footer{margin-top:40px;color:var(--muted);font:500 10px/1.6 DM Mono,monospace;max-width:760px}
+    @media(max-width:800px){.wrap{width:min(100% - 22px,680px);padding-top:14px}.topbar{align-items:flex-start;flex-direction:column-reverse;margin-bottom:28px}.tabs{width:100%}.tab{flex:1;padding-inline:8px}.hero,.access-intro{grid-template-columns:1fr}.stamp{display:none}.forecast-grid{grid-template-columns:1fr}.result{position:static;min-height:auto}.result-empty{min-height:390px}.access-card{grid-template-columns:1fr}.access-form{border-right:0;border-bottom:1px solid var(--line)}.species-head{align-items:stretch;flex-direction:column}.species-search{max-width:none}.species-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.fields{grid-template-columns:1fr}.field.full{grid-column:auto}.form-card,.result,.access-form,.access-output{padding:18px}.resource-row,.species-grid{grid-template-columns:1fr}.access-note{font-size:13px}.score{font-size:72px}.verdict{font-size:24px}.result{border-radius:15px}.card{border-radius:15px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="status"><i></i><span>CONDITIONS ENGINE · MANUAL INPUT</span></div>
+      <nav class="tabs" aria-label="Sections">
+        <button class="tab active" data-panel="forecast">Forecast</button>
+        <button class="tab" data-panel="access">Public access</button>
+        <button class="tab" data-panel="species">Fish guide</button>
+      </nav>
+    </div>
+
+    <main>
+      <section id="forecast" class="panel active">
+        <div class="hero">
+          <div>
+            <h1>Will the fish bite?</h1>
+            <p class="lead">Build a free fishing bite forecast for your target species using water temperature, habitat, season, weather, clarity, and time of day—then see what else might bite.</p>
+          </div>
+          <div class="stamp" aria-hidden="true">
+            <svg viewBox="0 0 180 110" fill="none"><path d="M16 57c24-29 56-38 92-24l20-19-3 29c18 10 29 25 37 42-17 4-33 2-47-4l-23 17 5-26C62 80 35 75 16 57Z" stroke="currentColor" stroke-width="5"/><circle cx="106" cy="46" r="4" fill="currentColor"/><path d="M22 57h45M68 38c-9 9-9 29 0 37" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+
+        <div class="forecast-grid">
+          <form class="card form-card" id="forecastForm">
+            <div class="section-head"><div><h2>Build your fishing forecast</h2><p>Use the current conditions where you plan to fish.</p></div><span class="step">01 / INPUT</span></div>
+            <div class="fields">
+              <div class="field full"><label for="target">Target species</label><input id="target" list="fishList" placeholder="Try walleye, barramundi, carp…" autocomplete="off" required><datalist id="fishList"></datalist></div>
+              <div class="field"><label for="habitat">Water type</label><select id="habitat"><option value="lake">Lake / reservoir</option><option value="river">River / stream</option><option value="pond">Pond / canal</option><option value="coast">Coast / estuary</option><option value="offshore">Offshore</option></select></div>
+              <div class="field"><label for="season">Local season</label><select id="season"><option>Spring</option><option>Summer</option><option>Autumn</option><option>Winter</option><option>Wet season</option><option>Dry season</option></select></div>
+              <div class="field"><label for="temp">Water temperature</label><div class="temp-wrap"><input id="temp" type="number" min="-2" max="120" step="1" value="50" inputmode="decimal"><div class="unit" aria-label="Temperature unit"><button type="button" class="active" data-unit="F">°F</button><button type="button" data-unit="C">°C</button></div></div></div>
+              <div class="field"><label for="time">Time of day</label><select id="time"><option value="sunrise">Dawn</option><option value="day">Day</option><option value="sunset">Dusk</option><option value="night">Night</option></select></div>
+              <div class="field"><label for="weather">Weather</label><select id="weather"><option value="clear">Clear / stable</option><option value="overcast">Overcast</option><option value="light-rain">Light rain</option><option value="front">Cold front</option><option value="windy">Windy</option></select></div>
+              <div class="field"><label for="clarity">Water clarity</label><select id="clarity"><option value="clear">Clear</option><option value="stained">Stained</option><option value="muddy">Muddy</option></select></div>
+            </div>
+            <button class="primary" type="submit">Tell me the ugly truth</button>
+            <div id="formError" class="copied" role="alert"></div>
+          </form>
+
+          <aside>
+            <div class="result" id="result" aria-live="polite">
+              <div class="result-empty">
+                <span class="mini">FORECAST WAITING</span>
+                <div class="fish-line" aria-hidden="true"><svg viewBox="0 0 180 110" fill="none"><path d="M16 57c24-29 56-38 92-24l20-19-3 29c18 10 29 25 37 42-17 4-33 2-47-4l-23 17 5-26C62 80 35 75 16 57Z" stroke="currentColor" stroke-width="5"/><circle cx="106" cy="46" r="4" fill="currentColor"/><path d="M22 57h45M68 38c-9 9-9 29 0 37" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></div>
+                <p>Pick your conditions. We’ll tell you whether to grab the rods or grab the remote.</p>
+                <span class="mini">NO PROMISES · FISH ARE RUDE</span>
+              </div>
+            </div>
+            <div class="card alt" id="alternatives" hidden><h3>Better bets in these conditions</h3><div class="alt-list" id="altList"></div></div>
+          </aside>
+        </div>
+        <div class="truth">This is a planning estimate built from broad species preferences—not live weather, local stocking reports, or a guarantee. Check local rules and conditions before you go.</div>
+      </section>
+
+      <section id="access" class="panel">
+        <div class="access-intro">
+          <div><h1>Find public fishing access—not a trespassing charge.</h1><p class="lead">Build a precise search for public fishing spots, bank access, boat ramps, and piers worldwide, then verify the location with the local authority.</p></div>
+          <div class="access-note"><strong>Reality check:</strong> no honest directory can guarantee every free access point worldwide. Shorelines close, permits change, and map tags can be wrong. This gives you the fastest responsible search path.</div>
+        </div>
+        <div class="card access-card">
+          <form class="access-form" id="accessForm">
+            <div class="section-head"><div><h2>Scout a place</h2><p>Nothing is stored after you close the page.</p></div><span class="step">02 / ACCESS</span></div>
+            <div class="fields" style="grid-template-columns:1fr">
+              <div class="field"><label for="place">Town, region, or country</label><input id="place" placeholder="e.g. Hastings, Michigan" required></div>
+              <div class="field"><label for="accessType">What kind of access?</label><select id="accessType"><option value="public fishing access">Public bank access</option><option value="free public boat ramp">Free boat ramp</option><option value="public fishing pier">Public pier / jetty</option><option value="accessible fishing platform">Accessible fishing platform</option><option value="public beach fishing access">Beach / surf access</option></select></div>
+              <div class="field"><label for="waterName">Water name (optional)</label><input id="waterName" placeholder="Lake, river, bay…"></div>
+            </div>
+            <button class="primary" type="submit">Build my access search</button>
+          </form>
+          <div class="access-output" id="accessOutput">
+            <span class="mini">YOUR SEARCH PLAN</span>
+            <h3 style="margin-top:14px">Start broad. Confirm narrow.</h3>
+            <p style="color:var(--muted);font-size:14px;line-height:1.55">Enter a place and access type. You’ll get search wording plus the checks that separate a real public spot from somebody’s backyard.</p>
+          </div>
+        </div>
+        <div class="resource-row">
+          <div class="card resource"><h3>OpenStreetMap fishing tags</h3><p>Community-mapped fishing places can be public or private. Use access and permit tags as clues, never final permission.</p><a class="linkbtn" href="https://wiki.openstreetmap.org/wiki/Key:fishing" target="_blank" rel="noopener noreferrer">Open mapping guide ↗</a></div>
+          <div class="card resource"><h3>Global Fishing Watch</h3><p>Useful for worldwide ocean fishing activity and protected-area context—not shore access or permission.</p><a class="linkbtn" href="https://globalfishingwatch.org/our-map/" target="_blank" rel="noopener noreferrer">Explore the ocean map ↗</a></div>
+        </div>
+      </section>
+
+      <section id="species" class="panel">
+        <div class="species-head"><h1>Fishing conditions by species.</h1><div class="species-search"><label for="speciesSearch">Filter the fish guide</label><input id="speciesSearch" placeholder="Freshwater, tuna, night…"></div></div>
+        <div class="species-grid" id="speciesGrid"></div>
+        <div class="card no-results" id="noSpecies">No fish match that search. Either check the spelling or stop inventing fish.</div>
+      </section>
+    </main>
+
+    <footer>Regulations, seasons, access, tides, safety, and licenses vary by jurisdiction. Always confirm with the local fisheries or land-management authority before fishing. Temperature ranges are broad planning bands; local strains and seasonal behavior vary.</footer>
+  </div>
+
+<script>
+(function(){
+  var fish = [
+    {n:'Largemouth bass',a:['largemouth','bass'],h:['lake','pond','river'],min:55,max:80,t:['sunrise','sunset'],w:['overcast','windy','light-rain'],s:['Spring','Summer','Autumn'],bait:'Slow plastic near cover; spinnerbait if wind gives you chop.',note:'Warm freshwater · cover-oriented'},
+    {n:'Smallmouth bass',a:['smallmouth','smallie'],h:['lake','river'],min:50,max:72,t:['sunrise','sunset','day'],w:['overcast','windy'],s:['Spring','Summer','Autumn'],bait:'Tube, ned rig, or small crankbait around rock and current seams.',note:'Cool freshwater · rock/current'},
+    {n:'Walleye',a:['walleye','pickerel'],h:['lake','river'],min:40,max:68,t:['sunrise','sunset','night'],w:['overcast','windy'],s:['Spring','Autumn','Winter'],bait:'Jig slowly near drop-offs; low light is your friend.',note:'Cool freshwater · low light'},
+    {n:'Northern pike',a:['northern pike','pike'],h:['lake','river'],min:40,max:68,t:['day','sunrise','sunset'],w:['overcast','windy'],s:['Spring','Autumn','Winter'],bait:'Flashy spoon or jerkbait along weed edges.',note:'Cold freshwater · ambush predator'},
+    {n:'Muskellunge',a:['muskellunge','muskie','musky'],h:['lake','river'],min:50,max:72,t:['sunrise','sunset','day'],w:['overcast','windy'],s:['Summer','Autumn'],bait:'Big lure, long casts, figure-eight—and unreasonable patience.',note:'Cool freshwater · low odds by nature'},
+    {n:'Yellow perch',a:['yellow perch','perch'],h:['lake','river','pond'],min:38,max:68,t:['day','sunrise'],w:['clear','overcast'],s:['Spring','Autumn','Winter'],bait:'Small jig or worm close to bottom; keep moving until you mark a school.',note:'Cool freshwater · schooling'},
+    {n:'Crappie',a:['crappie','speck'],h:['lake','pond','river'],min:48,max:72,t:['sunrise','sunset'],w:['overcast','clear'],s:['Spring','Autumn'],bait:'Tiny jig or minnow around brush, docks, and suspended schools.',note:'Freshwater · structure'},
+    {n:'Bluegill',a:['bluegill','bream','sunfish'],h:['lake','pond','river'],min:55,max:82,t:['day','sunrise','sunset'],w:['clear','overcast'],s:['Spring','Summer','Autumn'],bait:'Worm under a float. Yes, it still works.',note:'Warm freshwater · easygoing'},
+    {n:'Channel catfish',a:['channel catfish','catfish','cat'],h:['lake','river','pond'],min:55,max:85,t:['night','sunset','sunrise'],w:['overcast','light-rain'],s:['Spring','Summer','Autumn'],bait:'Cut bait or stink bait near current breaks and deeper edges.',note:'Warm freshwater · scent feeder'},
+    {n:'Common carp',a:['common carp','carp'],h:['lake','river','pond'],min:50,max:82,t:['day','sunrise','sunset'],w:['clear','overcast'],s:['Spring','Summer','Autumn'],bait:'Corn, bread, or boilie on bottom; keep the area quiet.',note:'Global freshwater · cautious'},
+    {n:'Rainbow trout',a:['rainbow trout','trout','rainbow'],h:['river','lake','pond'],min:40,max:65,t:['sunrise','day','sunset'],w:['overcast','light-rain'],s:['Spring','Autumn','Winter'],bait:'Small spinner, nymph, or drifting bait in oxygenated water.',note:'Cold freshwater · oxygen lover'},
+    {n:'Brown trout',a:['brown trout','brown'],h:['river','lake'],min:42,max:66,t:['sunrise','sunset','night'],w:['overcast','light-rain'],s:['Spring','Autumn','Winter'],bait:'Work cover and undercut banks with a nymph, streamer, or small plug.',note:'Cold freshwater · wary'},
+    {n:'Salmon',a:['salmon','chinook','coho','atlantic salmon'],h:['river','lake','coast'],min:40,max:60,t:['sunrise','sunset'],w:['overcast','light-rain'],s:['Spring','Autumn'],bait:'Match the local run; spoons, plugs, or drifting eggs where legal.',note:'Cold water · migration-driven'},
+    {n:'Zander',a:['zander'],h:['lake','river'],min:45,max:70,t:['sunset','night','sunrise'],w:['overcast','windy'],s:['Spring','Autumn','Winter'],bait:'Soft plastic or dead bait close to bottom in low light.',note:'European freshwater · low light'},
+    {n:'Barramundi',a:['barramundi','barra'],h:['river','coast'],min:72,max:90,t:['sunrise','sunset','night'],w:['overcast','light-rain'],s:['Wet season','Summer'],bait:'Paddle-tail or hardbody around structure and tide edges.',note:'Tropical estuary · heat lover'},
+    {n:'Murray cod',a:['murray cod','cod'],h:['river','lake'],min:58,max:78,t:['sunrise','sunset','night'],w:['overcast','clear'],s:['Spring','Summer','Autumn'],bait:'Large spinnerbait or surface lure tight to timber.',note:'Australian freshwater · structure'},
+    {n:'Nile perch',a:['nile perch'],h:['lake','river'],min:72,max:88,t:['sunrise','sunset','night'],w:['overcast','clear'],s:['Wet season','Dry season'],bait:'Large live bait where legal or a deep-running lure near structure.',note:'Tropical freshwater · heavyweight'},
+    {n:'Tilapia',a:['tilapia'],h:['lake','river','pond'],min:70,max:90,t:['day','sunrise'],w:['clear','overcast'],s:['Summer','Wet season','Dry season'],bait:'Small dough bait, corn, or worm near warm shallow structure.',note:'Tropical freshwater · warm shallows'},
+    {n:'Peacock bass',a:['peacock bass','peacock'],h:['lake','river'],min:72,max:88,t:['day','sunrise','sunset'],w:['clear','overcast'],s:['Wet season','Dry season','Summer'],bait:'Fast jerkbait or topwater around points and structure.',note:'Tropical freshwater · visual hunter'},
+    {n:'Snakehead',a:['snakehead'],h:['river','pond','lake'],min:65,max:88,t:['sunrise','sunset','day'],w:['overcast','clear'],s:['Spring','Summer','Wet season'],bait:'Frog or weedless lure over shallow cover; verify local rules.',note:'Warm freshwater · heavy cover'},
+    {n:'Redfish',a:['redfish','red drum'],h:['coast'],min:58,max:82,t:['sunrise','sunset','day'],w:['overcast','windy','clear'],s:['Spring','Summer','Autumn'],bait:'Paddletail, spoon, or shrimp around grass, points, and current.',note:'Coastal · estuary flats'},
+    {n:'Snook',a:['snook'],h:['coast','river'],min:68,max:86,t:['sunrise','sunset','night'],w:['overcast','clear'],s:['Spring','Summer','Wet season'],bait:'Live bait or paddletail near current, mangroves, and lights.',note:'Tropical coast · current edges'},
+    {n:'Tarpon',a:['tarpon','silver king'],h:['coast'],min:72,max:88,t:['sunrise','sunset','night'],w:['overcast','clear'],s:['Summer','Wet season'],bait:'Crab, mullet, or large swimbait along migration routes.',note:'Tropical coast · migration-driven'},
+    {n:'Striped bass',a:['striped bass','striper'],h:['coast','river','lake'],min:48,max:68,t:['sunrise','sunset','night'],w:['overcast','windy'],s:['Spring','Autumn','Winter'],bait:'Swimbait, plug, or live bait where current gathers forage.',note:'Cool water · roaming schools'},
+    {n:'Snapper',a:['snapper','red snapper'],h:['coast','offshore'],min:65,max:84,t:['sunrise','day','sunset'],w:['clear','overcast'],s:['Spring','Summer','Autumn','Dry season'],bait:'Natural bait or jig close to reef and structure; mind the season.',note:'Saltwater · reef structure'},
+    {n:'Grouper',a:['grouper'],h:['coast','offshore'],min:68,max:86,t:['day','sunrise','sunset'],w:['clear','overcast'],s:['Spring','Summer','Autumn','Dry season'],bait:'Heavy tackle with bait or jig tight to reef and wrecks.',note:'Warm saltwater · reef ambush'},
+    {n:'Mackerel',a:['mackerel','king mackerel','spanish mackerel'],h:['coast','offshore'],min:58,max:82,t:['day','sunrise'],w:['clear','windy'],s:['Spring','Summer','Autumn'],bait:'Fast metal, feather, or trolled bait near birds and bait schools.',note:'Saltwater · fast-moving schools'},
+    {n:'Mahi-mahi',a:['mahi mahi','mahi-mahi','dorado','dolphinfish'],h:['offshore'],min:72,max:86,t:['day','sunrise'],w:['clear'],s:['Summer','Wet season','Dry season'],bait:'Troll near weed lines or floating debris, then pitch bait.',note:'Warm offshore · surface-oriented'},
+    {n:'Tuna',a:['tuna','yellowfin tuna','bluefin tuna'],h:['offshore'],min:55,max:82,t:['sunrise','day','sunset'],w:['clear','overcast','windy'],s:['Spring','Summer','Autumn'],bait:'Match local forage; troll, jig, or cast where birds mark bait.',note:'Offshore · highly mobile'}
+  ];
+  var $=function(s){return document.querySelector(s)}, $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+  var gearQueries={
+    'Largemouth bass':'bass soft plastic lures spinnerbait','Smallmouth bass':'bass tube bait ned rig crankbait','Walleye':'walleye fishing jig','Northern pike':'northern pike spoon jerkbait','Muskellunge':'muskie fishing lure','Yellow perch':'perch fishing jig','Crappie':'crappie jig minnow lure','Bluegill':'bluegill fishing kit float hooks','Channel catfish':'catfish stink bait fishing tackle','Common carp':'carp boilies fishing bait','Rainbow trout':'trout spinner nymph lure','Brown trout':'trout nymph streamer plug','Salmon':'salmon fishing spoons plugs','Zander':'zander soft plastic lure','Barramundi':'barramundi paddletail hardbody lure','Murray cod':'murray cod spinnerbait surface lure','Nile perch':'nile perch deep diving lure','Tilapia':'tilapia dough bait hooks','Peacock bass':'peacock bass jerkbait topwater lure','Snakehead':'snakehead frog weedless lure','Redfish':'redfish paddletail spoon lure','Snook':'snook paddletail fishing lure','Tarpon':'tarpon crab mullet swimbait lure','Striped bass':'striped bass swimbait plug','Snapper':'snapper fishing jig tackle','Grouper':'grouper heavy tackle jig','Mackerel':'mackerel metal jig trolling feather','Mahi-mahi':'mahi mahi trolling lure','Tuna':'tuna trolling jig casting lure'
+  };
+  function amazonGearUrl(f){var query=gearQueries[f.n]||f.n+' fishing bait lure gear';return'https://www.amazon.com/s?k='+encodeURIComponent(query)}
+  function gearCta(f){return'<div class="gear-block"><a class="gear-button" href="'+amazonGearUrl(f)+'" target="_blank" rel="noopener noreferrer" aria-label="Get gear for '+escapeHtml(f.n)+' on Amazon">Get the gear</a></div>'}
+  var currentUnit='F';
+  fish.forEach(function(f){var o=document.createElement('option');o.value=f.n;$('#fishList').appendChild(o)});
+  $$('.tab').forEach(function(btn){btn.addEventListener('click',function(){ $$('.tab').forEach(function(b){b.classList.remove('active')}); $$('.panel').forEach(function(p){p.classList.remove('active')}); btn.classList.add('active'); $('#'+btn.dataset.panel).classList.add('active'); window.scrollTo(0,0); });});
+  $$('.unit button').forEach(function(btn){btn.addEventListener('click',function(){if(btn.dataset.unit===currentUnit)return;var inp=$('#temp'),v=parseFloat(inp.value);if(!isNaN(v)){inp.value=btn.dataset.unit==='C'?Math.round((v-32)*5/9):Math.round(v*9/5+32)}currentUnit=btn.dataset.unit;$$('.unit button').forEach(function(b){b.classList.toggle('active',b===btn)});inp.min=currentUnit==='C'?-2:28;inp.max=currentUnit==='C'?50:120;});});
+  function findFish(q){q=q.trim().toLowerCase();return fish.find(function(f){return f.n.toLowerCase()===q||f.a.indexOf(q)>-1})}
+  function scoreFish(f,hab,temp,time,weather,season,clarity){
+    var score=50,why=[];
+    if(f.h.indexOf(hab)>-1){score+=18;why.push(['Water','right habitat'])}else{score-=28;why.push(['Water','wrong neighborhood'])}
+    if(temp>=f.min&&temp<=f.max){var mid=(f.min+f.max)/2,dist=Math.abs(temp-mid);score+=Math.round(20-(dist/(f.max-f.min))*12);why.push(['Temperature','in the comfort band'])}
+    else{var gap=temp<f.min?f.min-temp:temp-f.max;score-=Math.min(35,12+Math.round(gap*1.6));why.push(['Temperature',gap>10?'way outside the sweet spot':'a little rough'])}
+    if(f.t.indexOf(time)>-1){score+=10;why.push(['Timing','a known feeding window'])}else{score-=5;why.push(['Timing','not their favorite shift'])}
+    if(f.w.indexOf(weather)>-1){score+=8;why.push(['Weather','working in your favor'])}else if(weather==='front'){score-=14;why.push(['Weather','cold-front mood swing'])}else{why.push(['Weather','mostly neutral'])}
+    if(f.s.indexOf(season)>-1){score+=7}else{score-=6}
+    if(clarity==='muddy'&&(f.n.indexOf('Catfish')>-1||f.n.indexOf('carp')>-1)){score+=6}
+    if(clarity==='clear'&&(f.n.indexOf('Trout')>-1||f.n==='Mahi-mahi')){score+=4}
+    return {score:Math.max(3,Math.min(96,score)),why:why}
+  }
+  function verdict(n){if(n>=82)return['Hot','Quit reading. Go fish before the fish change their minds.'];if(n>=66)return['Good','You’ve got a real shot. Try not to ruin it with a cast into a tree.'];if(n>=48)return['Fair','Could happen. So could you spend two hours untangling that reel.'];if(n>=30)return['Poor','Bring snacks. The fish may not participate.'];return['Brutal','Come on, man—you ain’t catching much. Stay home or practice knots.']}
+  $('#forecastForm').addEventListener('submit',function(e){e.preventDefault();var f=findFish($('#target').value);if(!f){$('#formError').textContent='Pick a fish from the guide so I don’t invent biology.';return}$('#formError').textContent='';var temp=parseFloat($('#temp').value);if(isNaN(temp)){temp=50}if(currentUnit==='C')temp=temp*9/5+32;var hab=$('#habitat').value,time=$('#time').value,weather=$('#weather').value,season=$('#season').value,clarity=$('#clarity').value;var r=scoreFish(f,hab,temp,time,weather,season,clarity),v=verdict(r.score);
+    $('#result').innerHTML='<span class="mini">'+f.n+' · '+v[0]+'</span><div class="score-row"><div class="score">'+r.score+'<small>%</small></div><div class="rating">bite potential</div></div><div class="meter"><span style="width:'+r.score+'%"></span></div><div class="verdict">'+v[1]+'</div><ul class="reason-list">'+r.why.map(function(x){return'<li><span>'+x[0]+'</span><b>'+x[1]+'</b></li>'}).join('')+'</ul><div class="plan"><strong>Game plan</strong><p>'+f.bait+'</p>'+gearCta(f)+'</div>';
+    var alts=fish.filter(function(x){return x!==f&&x.h.indexOf(hab)>-1}).map(function(x){return{x:x,s:scoreFish(x,hab,temp,time,weather,season,clarity).score}}).sort(function(a,b){return b.s-a.s}).slice(0,3);$('#altList').innerHTML=alts.map(function(a){return'<span class="alt-chip">'+a.x.n+' · '+a.s+'%</span>'}).join('');$('#alternatives').hidden=false;
+    if(window.innerWidth<801)$('#result').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  $('#accessForm').addEventListener('submit',function(e){e.preventDefault();var place=$('#place').value.trim(),type=$('#accessType').value,water=$('#waterName').value.trim();if(!place)return;var phrase='"'+place+'" '+(water?'"'+water+'" ':'')+type+' fishing regulations';$('#accessOutput').innerHTML='<span class="mini">SEARCH PLAN FOR '+escapeHtml(place).toUpperCase()+'</span><h3 style="margin-top:14px">Use this exact search</h3><div class="card" style="padding:14px;box-shadow:none;font:500 12px/1.5 DM Mono,monospace;overflow-wrap:anywhere">'+escapeHtml(phrase)+'</div><div class="copy-row"><button class="secondary" id="copySearch" type="button">Copy search wording</button></div><div class="copied" id="copyStatus"></div><ol class="checklist"><li><span>Look for an official fisheries, parks, council, or land-manager page.</span></li><li><span>Confirm bank access, parking, hours, closures, and whether “public” still requires a license or permit.</span></li><li><span>Check the exact water’s season, size, and bag rules—not just regional rules.</span></li><li><span>Verify weather, flow, tide, ice, and launch safety right before leaving.</span></li></ol>';
+    $('#copySearch').addEventListener('click',function(){navigator.clipboard.writeText(phrase).then(function(){$('#copyStatus').textContent='Copied. Paste it into your preferred search engine.'}).catch(function(){$('#copyStatus').textContent='Copy blocked—press and hold the search wording instead.'})});
+  });
+  function escapeHtml(s){return s.replace(/[&<>'"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[c]})}
+  function renderSpecies(q){q=(q||'').toLowerCase();var visible=fish.filter(function(f){return (f.n+' '+f.note+' '+f.h.join(' ')+' '+f.t.join(' ')).toLowerCase().indexOf(q)>-1});$('#speciesGrid').innerHTML=visible.map(function(f){return'<article class="card species-card"><span class="tag">'+escapeHtml(f.h.join(' · '))+'</span><h3>'+escapeHtml(f.n)+'</h3><p>'+escapeHtml(f.note)+'. '+escapeHtml(f.bait)+'</p><div class="temps">SWEET SPOT '+f.min+'–'+f.max+'°F · '+Math.round((f.min-32)*5/9)+'–'+Math.round((f.max-32)*5/9)+'°C</div>'+gearCta(f)+'</article>'}).join('');$('#noSpecies').style.display=visible.length?'none':'block'}
+  $('#speciesSearch').addEventListener('input',function(){renderSpecies(this.value)});renderSpecies('');
+})();
+</script>
+</body>
+</html>
