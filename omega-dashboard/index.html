@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MUSE OMEGA — Command Center</title>
+<style>
+  :root{
+    --bg:#0b0f16; --panel:#141b28; --panel2:#0f1520; --line:#26314a;
+    --text:#e9eff9; --muted:#9aa7c4; --accent:#58a6ff;
+    --ok:#3fb950; --warn:#d29922; --bad:#f85149; --idle:#6e7681;
+    --focus:#ffb454;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:22px; line-height:1.45; padding:0 0 4rem;
+  }
+  header{
+    padding:1.4rem 2rem 1rem; border-bottom:2px solid var(--line);
+    display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:.5rem;
+  }
+  header h1{margin:0; font-size:2.6rem; letter-spacing:.05em}
+  header .sub{color:var(--muted); font-size:1.15rem}
+  #sample-banner{
+    background:#3a2a10; color:#ffd88a; border:1px solid var(--warn);
+    padding:.7rem 2rem; font-size:1.15rem; display:none;
+  }
+  #sample-banner.show{display:block}
+  main{padding:1.2rem 2rem; display:grid; gap:1.4rem}
+  section.panel{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:1.2rem 1.6rem;
+  }
+  section.panel h2{margin:.2rem 0 1rem; font-size:1.7rem; display:flex; align-items:center; gap:.7rem}
+  section.panel h2 .kbd{font-size:1rem; color:var(--muted); border:1px solid var(--line);
+    border-radius:8px; padding:.1rem .6rem}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(430px,1fr)); gap:1rem}
+  .card{
+    background:var(--panel2); border:2px solid var(--line); border-radius:12px;
+    padding:1rem 1.2rem; outline:none;
+  }
+  .card:focus-visible{border-color:var(--focus); box-shadow:0 0 0 4px var(--focus)}
+  .card .name{font-size:1.35rem; font-weight:700}
+  .card .task{color:var(--muted); font-size:1.12rem; margin-top:.3rem}
+  .card .meta{display:flex; justify-content:space-between; align-items:center; margin-top:.6rem}
+  .pill{font-size:1.05rem; font-weight:700; padding:.25rem 1rem; border-radius:999px}
+  .ok{background:rgba(63,185,80,.18); color:var(--ok)}
+  .warn{background:rgba(210,153,34,.18); color:var(--warn)}
+  .down,.overdue{background:rgba(248,81,73,.18); color:var(--bad)}
+  .idle{background:rgba(110,118,129,.18); color:var(--muted)}
+  .time{color:var(--muted); font-size:1.05rem}
+  .big{font-size:3rem; font-weight:800; margin:.2rem 0}
+  .label{color:var(--muted); font-size:1.1rem}
+  .row{display:flex; gap:2.5rem; flex-wrap:wrap}
+  .stat{flex:1; min-width:260px; background:var(--panel2); border:2px solid var(--line);
+    border-radius:12px; padding:1rem 1.4rem; outline:none}
+  .stat:focus-visible{border-color:var(--focus); box-shadow:0 0 0 4px var(--focus)}
+  ul.list{list-style:none; margin:0; padding:0; display:grid; gap:.8rem}
+  ul.list li{background:var(--panel2); border:2px solid var(--line); border-radius:10px;
+    padding:.9rem 1.2rem; outline:none}
+  ul.list li:focus-visible{border-color:var(--focus); box-shadow:0 0 0 4px var(--focus)}
+  ul.list .t{font-weight:700; font-size:1.25rem}
+  ul.list .d{color:var(--muted); font-size:1.1rem}
+  .err{border-left:6px solid var(--bad)}
+  .note{border-left:6px solid var(--warn)}
+  #approvals-note{
+    background:#1c2740; border:2px dashed var(--accent); border-radius:10px;
+    padding:1rem 1.2rem; margin-bottom:1rem; font-size:1.2rem;
+  }
+  footer{padding:1rem 2rem; color:var(--muted); font-size:1.05rem}
+  #hintbar{
+    position:fixed; left:0; right:0; bottom:0; background:#0f1520; border-top:2px solid var(--line);
+    padding:.6rem 2rem; font-size:1.05rem; color:var(--muted);
+  }
+  #hintbar b{color:var(--text)}
+  #last-updated{color:var(--muted); font-size:1.1rem}
+  @media (max-width:900px){
+    body{font-size:18px}
+    header h1{font-size:1.8rem}
+    .grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div id="sample-banner">SAMPLE DATA — feed not yet connected. Cron workers regenerate <code>data/status.json</code> with real values.</div>
+
+<header>
+  <div>
+    <h1>MUSE OMEGA — COMMAND CENTER</h1>
+    <div class="sub">Live operations dashboard · <span id="last-updated">loading…</span></div>
+  </div>
+  <div class="sub" id="fleet-note"></div>
+</header>
+
+<main>
+  <section class="panel" id="sec-agents" tabindex="0" aria-label="Agent status">
+    <h2>AGENTS / JOB LANES <span class="kbd">1</span></h2>
+    <div class="grid" id="agents"></div>
+  </section>
+
+  <section class="panel" id="sec-earnings" tabindex="0" aria-label="Earnings">
+    <h2>EARNINGS <span class="kbd">2</span></h2>
+    <div class="row">
+      <div class="stat" tabindex="0"><div class="label">Verified total</div><div class="big" id="e-total">$0.00</div></div>
+      <div class="stat" tabindex="0"><div class="label">Pending / claimed</div><div class="big" id="e-pending">$0.00</div></div>
+    </div>
+    <ul class="list" id="e-events" style="margin-top:1rem"></ul>
+  </section>
+
+  <section class="panel" id="sec-discoveries" tabindex="0" aria-label="Discoveries">
+    <h2>DISCOVERIES <span class="kbd">3</span></h2>
+    <ul class="list" id="discoveries"></ul>
+  </section>
+
+  <section class="panel" id="sec-deadlines" tabindex="0" aria-label="Deadlines">
+    <h2>DEADLINES <span class="kbd">4</span></h2>
+    <ul class="list" id="deadlines"></ul>
+  </section>
+
+  <section class="panel" id="sec-errors" tabindex="0" aria-label="Errors">
+    <h2>ERRORS / INCIDENTS <span class="kbd">5</span></h2>
+    <ul class="list" id="errors"></ul>
+  </section>
+
+  <section class="panel" id="sec-approvals" tabindex="0" aria-label="Approval queue">
+    <h2>APPROVAL QUEUE <span class="kbd">6</span></h2>
+    <div id="approvals-note">
+      DISPLAY ONLY — this page cannot submit anything. All approvals happen in chat.
+      A static page has no backend, and adding one would put an unauthenticated
+      action endpoint on a public URL. See the asks below, reply in chat.
+    </div>
+    <ul class="list" id="approvals"></ul>
+  </section>
+</main>
+
+<footer>
+  Auto-refreshes every 60s from <code>data/status.json</code> · Feed format: <code>data/README.md</code> ·
+  This dashboard shows no personal data by design (no names, emails, addresses, phone numbers).
+</footer>
+<div id="hintbar"><b>Arrows</b> move · <b>1–6</b> jump to a section · <b>R</b> refresh now</div>
+
+<script>
+(function(){
+  "use strict";
+  var FEED = "data/status.json", REFRESH_MS = 60000;
+
+  function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+
+  function pillClass(s){
+    return s === "ok" ? "ok" : s === "warn" ? "warn" : s === "down" ? "down"
+         : s === "idle" ? "idle" : s === "upcoming" ? "ok" : s === "overdue" ? "overdue"
+         : s === "verified" ? "ok" : s === "pending" ? "warn" : "idle";
+  }
+  function money(n){ return "$" + Number(n || 0).toFixed(2); }
+
+  function render(d){
+    // banner + header
+    document.getElementById("sample-banner").classList.toggle("show", !!d.meta.sample);
+    var m = d.meta || {};
+    document.getElementById("last-updated").textContent =
+      "feed updated " + esc(m.generated_at || "?") + " by " + esc(m.generated_by || "?");
+    var f = d.fleet || {};
+    document.getElementById("fleet-note").textContent =
+      "Fleet: " + (f.summary || "?").toUpperCase() +
+      " · Browser fleet: " + (f.browser_fleet || "?").toUpperCase() +
+      (f.note ? " — " + f.note : "");
+
+    // agents
+    document.getElementById("agents").innerHTML = (d.agents || []).map(function(a){
+      return '<div class="card" tabindex="0">' +
+        '<div class="name">' + esc(a.label) + '</div>' +
+        '<div class="task">' + esc(a.current_task) + '</div>' +
+        '<div class="meta"><span class="pill ' + pillClass(a.status) + '">' +
+        esc(String(a.status).toUpperCase()) + '</span>' +
+        '<span class="time">' + esc(a.last_update) + '</span></div></div>';
+    }).join("");
+
+    // earnings
+    var e = d.earnings || {};
+    document.getElementById("e-total").textContent = money(e.verified_total_usd);
+    document.getElementById("e-pending").textContent = money(e.pending_usd);
+    document.getElementById("e-events").innerHTML = (e.events || []).map(function(ev){
+      return '<li tabindex="0"><div class="t">' + money(ev.amount_usd) + ' · ' + esc(ev.lane) +
+        ' <span class="pill ' + pillClass(ev.state) + '">' + esc(String(ev.state).toUpperCase()) + '</span></div>' +
+        '<div class="d">' + esc(ev.time) + ' — ' + esc(ev.note) + '</div></li>';
+    }).join("");
+
+    // discoveries
+    document.getElementById("discoveries").innerHTML = (d.discoveries || []).map(function(x){
+      return '<li tabindex="0"><div class="t">' + esc(x.text) + '</div>' +
+        '<div class="d">' + esc(x.time) + ' · ' + esc(x.lane) + '</div></li>';
+    }).join("");
+
+    // deadlines
+    document.getElementById("deadlines").innerHTML = (d.deadlines || []).map(function(x){
+      return '<li tabindex="0" class="' + (x.status === "overdue" ? "err" : "note") + '">' +
+        '<div class="t">' + esc(x.title) + ' <span class="pill ' + pillClass(x.status) + '">' +
+        esc(String(x.status).toUpperCase()) + '</span></div>' +
+        '<div class="d">Due ' + esc(x.due) + (x.note ? ' — ' + esc(x.note) : '') + '</div></li>';
+    }).join("");
+
+    // errors
+    document.getElementById("errors").innerHTML = (d.errors || []).map(function(x){
+      return '<li tabindex="0" class="err"><div class="t">' + esc(x.message) + '</div>' +
+        '<div class="d">' + esc(x.time) + ' · ' + esc(x.source) +
+        ' · impact: ' + esc(x.impact) + '</div></li>';
+    }).join("");
+
+    // approvals (display only)
+    document.getElementById("approvals").innerHTML = (d.approvals || []).map(function(x){
+      return '<li tabindex="0"><div class="t">' + esc(x.title) + '</div>' +
+        '<div class="d">' + esc(x.detail) + '</div>' +
+        '<div class="d">Asked ' + esc(x.asked_at) + ' · reply in chat</div></li>';
+    }).join("");
+  }
+
+  function load(){
+    fetch(FEED, {cache: "no-store"}).then(function(r){
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    }).then(render).catch(function(err){
+      document.getElementById("sample-banner").classList.add("show");
+      document.getElementById("last-updated").textContent =
+        "feed unavailable (" + esc(err.message) + ") — showing last known layout";
+    });
+  }
+
+  // ---- D-pad / keyboard navigation ----
+  var SECTIONS = ["sec-agents","sec-earnings","sec-discoveries","sec-deadlines","sec-errors","sec-approvals"];
+
+  function focusables(){
+    return Array.prototype.filter.call(document.querySelectorAll("[tabindex]"), function(el){
+      return el.offsetParent !== null;
+    });
+  }
+  function center(el){
+    var r = el.getBoundingClientRect();
+    return {x: r.left + r.width/2, y: r.top + r.height/2};
+  }
+  function move(dir){
+    var cur = document.activeElement;
+    if(!cur || cur === document.body){ var f = focusables(); if(f[0]) f[0].focus(); return; }
+    var c = center(cur), best = null, bestScore = Infinity;
+    focusables().forEach(function(el){
+      if(el === cur) return;
+      var p = center(el), dx = p.x - c.x, dy = p.y - c.y;
+      var inDir = dir === "left" ? dx < -8 : dir === "right" ? dx > 8
+                : dir === "up" ? dy < -8 : dy > 8;
+      if(!inDir) return;
+      var primary = dir === "left" || dir === "right" ? Math.abs(dx) : Math.abs(dy);
+      var secondary = dir === "left" || dir === "right" ? Math.abs(dy) : Math.abs(dx);
+      var score = primary + secondary * 2.5;
+      if(score < bestScore){ bestScore = score; best = el; }
+    });
+    if(best){ best.focus(); best.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+  }
+
+  document.addEventListener("keydown", function(e){
+    var k = e.key;
+    if(k === "ArrowLeft"){ move("left"); e.preventDefault(); }
+    else if(k === "ArrowRight"){ move("right"); e.preventDefault(); }
+    else if(k === "ArrowUp"){ move("up"); e.preventDefault(); }
+    else if(k === "ArrowDown"){ move("down"); e.preventDefault(); }
+    else if(k >= "1" && k <= "6"){
+      var s = document.getElementById(SECTIONS[Number(k)-1]);
+      if(s){ s.focus(); s.scrollIntoView({behavior:"smooth"}); }
+    }
+    else if(k === "r" || k === "R"){ load(); }
+  });
+
+  load();
+  setInterval(load, REFRESH_MS);
+  window.addEventListener("load", function(){
+    var f = focusables(); if(f[0]) f[0].focus();
+  });
+})();
+</script>
+</body>
+</html>
