@@ -1,1 +1,167 @@
-{"agents":[{"current_task":"Wave review batch 12","id":"outreach-drafts","label":"Outreach Drafts","last_update":"19:40 EDT","status":"ok"},{"current_task":"Sweepstakes discovery scan","id":"contest-prep","label":"Contest Prep","last_update":"19:32 EDT","status":"ok"},{"current_task":"Price-watch sweep","id":"freebie-deals","label":"Freebie / Deal Hunt","last_update":"19:28 EDT","status":"ok"},{"current_task":"Bounty recon: queued scope check","id":"money-lanes","label":"Money Lanes","last_update":"19:15 EDT","status":"warn"},{"current_task":"Waiting on approvals","id":"content-lane","label":"Content Lane","last_update":"18:50 EDT","status":"idle"},{"current_task":"5-min cycle: fresh code-seekers","id":"referral-hunt","label":"Referral Hunt","last_update":"19:53 EDT","status":"ok"}],"approvals":[{"asked_at":"2026-10-15 19:50 EDT","detail":"Display-only sample. Real approval asks appear here.","id":"sample-1","title":"Sample approval request"}],"deadlines":[{"due":"2026-10-21 12:00 PM ET","note":"Portal-only. Zero-tap filing blocked on browser fleet.","status":"upcoming","title":"DHS biothreat proposal — OIP portal filing"},{"due":"2026-10-17 17:05 EDT","note":"Referral hunt stays under budget until reset.","status":"upcoming","title":"Token reset"}],"discoveries":[{"lane":"sample","text":"Sample discovery placeholder. Real verified finds only.","time":"2026-10-15 14:30 EDT"}],"earnings":{"currency":"USD","events":[{"amount_usd":0.0,"lane":"sample","note":"Sample placeholder. Real verified earnings only.","state":"sample","time":"2026-10-15"}],"pending_usd":0.0,"verified_total_usd":0.0},"errors":[{"impact":"none","message":"Sample error placeholder","source":"workstream-c","time":"2026-10-15 19:53 EDT"}],"fleet":{"browser_fleet":"down","note":"Browser fleet unavailable; static/research lanes running.","summary":"degraded"},"meta":{"generated_at":"2026-10-15T19:55:00-04:00","generated_by":"workstream-c-prototype","note":"SAMPLE DATA. Cron workers regenerate this file with real values. Schema documented in data/README.md.","sample":true,"schema_version":1},"tokens":{"banked_billions":4.0,"note":"Referral hunt exempt from throttling per owner order.","reset_at":"2026-10-17T17:05:00-04:00"}}
+{
+ "meta": {
+  "generated_at": "2026-10-16T00:05:06-04:00",
+  "generated_by": "build-feed.py",
+  "sample": false,
+  "schema_version": 1,
+  "note": "All values read from workspace logs at generation time. Verified numbers only."
+ },
+ "fleet": {
+  "summary": "degraded",
+  "browser_fleet": "flapping",
+  "note": "Simple probes pass; real workflows fail. ~39h unstable since Oct 14 08:53 EDT."
+ },
+ "tokens": {
+  "banked_billions": 3.9,
+  "note": "Referral hunt exempt from throttling per owner order.",
+  "reset_at": "2026-10-17T17:05:00-04:00",
+  "flat_since": "16:41"
+ },
+ "agents": [
+  {
+   "id": "referral-hunt",
+   "label": "Referral Hunt (B3NYLG)",
+   "current_task": "5-min cycle: fresh code-seekers",
+   "status": "ok",
+   "last_update": "00:01 EDT"
+  },
+  {
+   "id": "outreach",
+   "label": "Outreach Email",
+   "current_task": "Wave 35: 33/150 UTC-day sends used",
+   "status": "ok",
+   "last_update": "00:00 EDT"
+  },
+  {
+   "id": "money-lanes",
+   "label": "Money Lanes",
+   "current_task": "No new lanes; Zoud gameplay video review-ready",
+   "status": "ok",
+   "last_update": "23:40 EDT"
+  },
+  {
+   "id": "contests",
+   "label": "Contests / Freebies",
+   "current_task": "Browser lane blocked; email entries only",
+   "status": "warn",
+   "last_update": "23:40 EDT"
+  },
+  {
+   "id": "night-desk",
+   "label": "Night Desk Publisher",
+   "current_task": "Story staged; FB publish blocked by fleet",
+   "status": "warn",
+   "last_update": "23:50 EDT"
+  },
+  {
+   "id": "bounty-builds",
+   "label": "Bounty Builds",
+   "current_task": "LedgerLens 35/35 pass (closes Oct 18)",
+   "status": "warn",
+   "last_update": "23:40 EDT"
+  }
+ ],
+ "earnings": {
+  "currency": "USD",
+  "verified_total_usd": 0.0,
+  "pending_usd": 0.0,
+  "events": [
+   {
+    "amount_usd": 0.0,
+    "lane": "operations",
+    "state": "verified",
+    "time": "2026-10-16",
+    "note": "$0 verified operation cash to date. $550 strike pay landed Oct 15 (non-operation)."
+   }
+  ]
+ },
+ "discoveries": [
+  {
+   "text": "Michigan Out-of-Doors TV: $300 Jay's Sporting Goods gift card + hoodie giveaway found; entry blocked by browser fleet, queued.",
+   "time": "2026-10-15 23:50 EDT",
+   "lane": "freebies"
+  },
+  {
+   "text": "Mountainland Swag Bag (Gleam) queued for retry; Fall for Adventure (SweepWidget) quarantined, 114 entrants reported.",
+   "time": "2026-10-15 23:40 EDT",
+   "lane": "contests"
+  },
+  {
+   "text": "Telly TV identified: free dual-screen set + bundled 4K Android TV dongle. Dashboard path verified (TV Bro browser, $0).",
+   "time": "2026-10-16 00:30 EDT",
+   "lane": "systems"
+  }
+ ],
+ "deadlines": [
+  {
+   "title": "Anthony Hamilton concert \u2014 Van Andel Arena, Sec 123 Row C",
+   "due": "2026-10-16 8:00 PM EDT",
+   "status": "upcoming",
+   "note": "Tickets confirmed. Attend or gift \u2014 his call."
+  },
+  {
+   "title": "LedgerLens closes",
+   "due": "2026-10-18",
+   "status": "upcoming",
+   "note": "35/35 tests pass. Submission unresolved."
+  },
+  {
+   "title": "AMD ACT III hackathon",
+   "due": "2026-10-18 11:00 AM EDT",
+   "status": "upcoming",
+   "note": "Explainer owed; sign-in unresolved."
+  },
+  {
+   "title": "Token reset",
+   "due": "2026-10-17 5:05 PM EDT",
+   "status": "upcoming",
+   "note": "~3.9B banked, flat since 16:41. Emergency over."
+  },
+  {
+   "title": "DHS SentinelWeave portal filing \u2014 PORTAL ONLY",
+   "due": "2026-10-21 12:00 PM ET",
+   "status": "upcoming",
+   "note": "Proposal NOT filed. File when fleet stable."
+  },
+  {
+   "title": "Electric $144",
+   "due": "2026-10-19",
+   "status": "upcoming",
+   "note": "His payment. Reminder set Oct 18 09:00."
+  }
+ ],
+ "errors": [
+  {
+   "message": "Browser fleet flapping ~39h (since Oct 14 08:53 EDT). Forms, FB publish, DHS filing blocked. No blind retries.",
+   "time": "2026-10-15 23:56 EDT",
+   "source": "night-desk-publisher",
+   "impact": "FB/contest/form/DHS lanes stalled; text-only lanes running"
+  },
+  {
+   "message": "Outreach run timed out mid-wave (1200s). 20 wave-35 rows unprocessed; retry-limiter holds 2 rows until UTC 10-17.",
+   "time": "2026-10-16 00:00 EDT",
+   "source": "outreach-email-retry",
+   "impact": "minor; next 20-min run resumes"
+  }
+ ],
+ "approvals": [
+  {
+   "id": "vault-captures",
+   "title": "3 AI-provider vault captures",
+   "detail": "Groq + 2 more providers. Unlocks cross-model mesh. In Secure Vault, needs his taps.",
+   "asked_at": "2026-10-15"
+  },
+  {
+   "id": "telly-setup",
+   "title": "Telly TV: install TV Bro on the Android dongle",
+   "detail": "Play Store on the bundled 4K Android dongle -> install TV Bro -> open the dashboard URL. ~3 min, his hands.",
+   "asked_at": "2026-10-16"
+  },
+  {
+   "id": "farmers-387",
+   "title": "Farmers $387 replacement payment or call Tyler Rosa",
+   "detail": "Oct 14 payment failed authorization. His money decision.",
+   "asked_at": "2026-10-15"
+  }
+ ]
+}
