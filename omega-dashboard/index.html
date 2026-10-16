@@ -97,6 +97,10 @@
 </header>
 
 <main>
+  <section class="panel" id="sec-brief" tabindex="0" aria-label="AI command brief" style="border-color:#7c5cff">
+    <h2>AI COMMAND BRIEF <span class="kbd">0</span> <span id="brief-time" style="font-weight:normal;opacity:.7"></span></h2>
+    <div id="ai-brief" style="white-space:pre-wrap;line-height:1.5"></div>
+  </section>
   <section class="panel" id="sec-agents" tabindex="0" aria-label="Agent status">
     <h2>AGENTS / JOB LANES <span class="kbd">1</span></h2>
     <div class="grid" id="agents"></div>
@@ -141,7 +145,7 @@
   Auto-refreshes every 60s from <code>data/status.json</code> · Feed format: <code>data/README.md</code> ·
   This dashboard shows no personal data by design (no names, emails, addresses, phone numbers).
 </footer>
-<div id="hintbar"><b>Arrows</b> move · <b>1–6</b> jump to a section · <b>R</b> refresh now</div>
+<div id="hintbar"><b>Arrows</b> move · <b>0–6</b> jump to a section · <b>R</b> refresh now</div>
 
 <script>
 (function(){
@@ -211,6 +215,16 @@
         ' · impact: ' + esc(x.impact) + '</div></li>';
     }).join("");
 
+    // ai command brief
+    var brief = d.ai_brief;
+    if (brief && brief.text) {
+      document.getElementById("ai-brief").textContent = brief.text;
+      document.getElementById("brief-time").textContent =
+        "· generated " + (brief.generated_at || "unknown") + " by " + (brief.generated_by || "AI");
+    } else {
+      document.getElementById("ai-brief").textContent = "Brief not yet generated.";
+    }
+
     // approvals (display only)
     document.getElementById("approvals").innerHTML = (d.approvals || []).map(function(x){
       return '<li tabindex="0"><div class="t">' + esc(x.title) + '</div>' +
@@ -231,7 +245,7 @@
   }
 
   // ---- D-pad / keyboard navigation ----
-  var SECTIONS = ["sec-agents","sec-earnings","sec-discoveries","sec-deadlines","sec-errors","sec-approvals"];
+  var SECTIONS = ["sec-brief","sec-agents","sec-earnings","sec-discoveries","sec-deadlines","sec-errors","sec-approvals"];
 
   function focusables(){
     return Array.prototype.filter.call(document.querySelectorAll("[tabindex]"), function(el){
@@ -266,8 +280,8 @@
     else if(k === "ArrowRight"){ move("right"); e.preventDefault(); }
     else if(k === "ArrowUp"){ move("up"); e.preventDefault(); }
     else if(k === "ArrowDown"){ move("down"); e.preventDefault(); }
-    else if(k >= "1" && k <= "6"){
-      var s = document.getElementById(SECTIONS[Number(k)-1]);
+    else if(k >= "0" && k <= "6"){
+      var s = document.getElementById(SECTIONS[Number(k)]);
       if(s){ s.focus(); s.scrollIntoView({behavior:"smooth"}); }
     }
     else if(k === "r" || k === "R"){ load(); }

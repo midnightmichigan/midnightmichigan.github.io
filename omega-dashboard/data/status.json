@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-10-16T00:52:49-04:00",
+  "generated_at": "2026-10-16T01:02:02-04:00",
   "generated_by": "build-feed.py",
   "sample": false,
   "schema_version": 1,
@@ -163,5 +163,10 @@
    "detail": "Oct 14 payment failed authorization. His money decision.",
    "asked_at": "2026-10-15"
   }
- ]
+ ],
+ "ai_brief": {
+  "generated_at": "2026-10-16T01:05:00-04:00",
+  "generated_by": "groq openai/gpt-oss-120b (keyed)",
+  "text": "NOW \u2013 Get the browser fleet back online now; without it wave\u202f36 stalls and 1,176 contact forms sit idle.  \n\nMOMENTUM \u2013 Wave\u202f36 queued, 56/150 emails sent; Groq\u202f120B & OpenRouter\u202f16 models running zero\u2011cost routes; TikTok AI factory rendering 3 videos.  \n\nBLOCKED \u2013 Browser fleet down 40\u202fh (forms, Facebook publishing); Chromium fallback still building; referral code B3NYLG token bank low, watch reset 5:05\u202fPM Sat.  \n\nNEXT\u202f24H \u2013 1) Deploy Chromium fallback to revive forms & FB; 2) Complete wave\u202f36 auto\u2011send, push remaining 94 emails; 3) File Anthony Hamilton tickets by 8\u202fPM, prep LedgerLens for Oct\u202f18."
+ }
 }

@@ -133,6 +133,14 @@ out["approvals"] = [
      "asked_at": "2026-10-15"},
 ]
 
+# ---- ai_brief: generated in-session with keyed model, preserved by cron ----
+brief_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "ai-brief.json")
+try:
+    with open(brief_path, encoding="utf-8") as bf:
+        out["ai_brief"] = json.load(bf)
+except (FileNotFoundError, json.JSONDecodeError):
+    out["ai_brief"] = None
+
 out["meta"] = {
     "generated_at": now_edt().isoformat(timespec="seconds"),
     "generated_by": "build-feed.py",
