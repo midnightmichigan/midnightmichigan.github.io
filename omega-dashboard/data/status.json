@@ -1,6 +1,6 @@
 {
  "meta": {
-  "generated_at": "2026-10-16T03:22:24-04:00",
+  "generated_at": "2026-10-16T03:37:24-04:00",
   "generated_by": "build-feed.py",
   "sample": false,
   "schema_version": 1,
@@ -28,7 +28,7 @@
   {
    "id": "outreach",
    "label": "Outreach Email",
-   "current_task": "Wave 35: 94/150 UTC-day sends used",
+   "current_task": "Wave 35: 100/150 UTC-day sends used",
    "status": "ok",
    "last_update": "00:00 EDT"
   },
