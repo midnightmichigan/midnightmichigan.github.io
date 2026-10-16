@@ -77,6 +77,23 @@ night-desk deploy) to put live data on the TV screen.
 }
 ```
 
+## Companion files (standalone panels)
+
+Four more panels render from their own JSON files, fetched directly by
+`index.html` every 60s — they are NOT merged into `status.json`. Same rules
+(honest values, no PII, < 64 KB each).
+
+- `data/ai-network.json` — `{fallback_order: [...], routes: [{order, provider, model, auth: "keyed-required | keyless", status, note}], rules: [...]}`.
+  Provider/model names and status words ONLY — no keys, tokens, or credentials.
+  Source: `~/workspace/omega-ecosystem/ai-routes/`.
+- `data/workstreams.json` — `{workstreams: [{id: "A".. "H", label, status, note}]}`. Status labels: `deployed | ok | warn | pending`.
+- `data/social.json` — `{platforms: [{platform, status: "proposed | active | live", note}]}`.
+  If `~/workspace/omega-ecosystem/social-brand/brand-plan-2026-10-16.md` is
+  absent, every platform is `proposed`.
+- `data/revenue.json` — `{verified_received_usd, currency: "USD", opportunities: [{name, type, prize_usd|null, status, note}], rule}`.
+  Honest zero: `verified_received_usd` = cash actually received from
+  operations ($0.00 to date). Opportunities are identified, not earnings.
+
 ## How workers publish updates
 
 1. Edit or regenerate `data/status.json` in this dashboard directory.

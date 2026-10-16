@@ -101,6 +101,27 @@
     <h2>AI COMMAND BRIEF <span class="kbd">0</span> <span id="brief-time" style="font-weight:normal;opacity:.7"></span></h2>
     <div id="ai-brief" style="white-space:pre-wrap;line-height:1.5"></div>
   </section>
+  <section class="panel" id="sec-network" tabindex="0" aria-label="AI network">
+    <h2>AI NETWORK <span class="kbd">7</span></h2>
+    <ul class="list" id="network"></ul>
+    <div style="color:var(--muted);font-size:1.1rem;margin-top:.8rem" id="network-note"></div>
+  </section>
+  <section class="panel" id="sec-workstreams" tabindex="0" aria-label="Add-on workstreams">
+    <h2>AGENTS / WORKSTREAMS <span class="kbd">8</span></h2>
+    <div class="grid" id="workstreams"></div>
+    <div style="color:var(--muted);font-size:1.1rem;margin-top:.8rem" id="ws-note"></div>
+  </section>
+  <section class="panel" id="sec-social" tabindex="0" aria-label="Social brand">
+    <h2>SOCIAL BRAND <span class="kbd">9</span></h2>
+    <ul class="list" id="social"></ul>
+    <div style="color:var(--muted);font-size:1.1rem;margin-top:.8rem" id="social-note"></div>
+  </section>
+  <section class="panel" id="sec-revenue" tabindex="0" aria-label="Revenue">
+    <h2>REVENUE <span class="kbd">10</span></h2>
+    <div class="stat" tabindex="0"><div class="label">Verified received (operation cash)</div><div class="big" id="rev-total">$0.00</div></div>
+    <ul class="list" id="rev-opps" style="margin-top:1rem"></ul>
+    <div style="color:var(--muted);font-size:1.1rem;margin-top:.8rem" id="rev-note"></div>
+  </section>
   <section class="panel" id="sec-agents" tabindex="0" aria-label="Agent status">
     <h2>AGENTS / JOB LANES <span class="kbd">1</span></h2>
     <div class="grid" id="agents"></div>
@@ -145,7 +166,7 @@
   Auto-refreshes every 60s from <code>data/status.json</code> · Feed format: <code>data/README.md</code> ·
   This dashboard shows no personal data by design (no names, emails, addresses, phone numbers).
 </footer>
-<div id="hintbar"><b>Arrows</b> move · <b>0–6</b> jump to a section · <b>R</b> refresh now</div>
+<div id="hintbar"><b>Arrows</b> move · <b>0–10</b> jump to a section · <b>R</b> refresh now</div>
 
 <script>
 (function(){
@@ -244,8 +265,74 @@
     });
   }
 
+  // ---- standalone JSON panels (ai-network, workstreams, social, revenue) ----
+  function wsPill(s){
+    s = String(s == null ? "" : s).toLowerCase();
+    if(/not (filed|submitted)|blocked|failed|dead/.test(s)) return "down";
+    if(/pending|needs|waiting|brief not yet|not yet/.test(s)) return "warn";
+    if(/proposed|planned|idle/.test(s)) return "idle";
+    return "ok"; // verified, deployed, running, submitted, active, live
+  }
+  function setText(id, s){ var el = document.getElementById(id); if(el) el.textContent = s; }
+
+  function renderNetwork(d){
+    document.getElementById("network").innerHTML = (d.routes || []).map(function(r){
+      return '<li tabindex="0"><div class="t">#' + esc(r.order) + ' ' + esc(r.provider) +
+        ' <span class="pill ' + wsPill(r.status) + '">' + esc(String(r.status).toUpperCase()) + '</span>' +
+        ' <span class="pill ' + (String(r.auth).indexOf("keyless") >= 0 ? "ok" : "warn") + '">' +
+        esc(String(r.auth).toUpperCase()) + '</span></div>' +
+        '<div class="d">' + esc(r.model) + ' — ' + esc(r.note) + '</div></li>';
+    }).join("");
+    setText("network-note", (d.fallback_order || []).join(" ") + " " + (d.note || ""));
+  }
+
+  function renderWorkstreams(d){
+    document.getElementById("workstreams").innerHTML = (d.workstreams || []).map(function(w){
+      return '<div class="card" tabindex="0">' +
+        '<div class="name">' + esc(w.label) + '</div>' +
+        '<div class="task">' + esc(w.note || "") + '</div>' +
+        '<div class="meta"><span class="pill ' + wsPill(w.status) + '">' +
+        esc(String(w.status).toUpperCase()) + '</span></div></div>';
+    }).join("");
+    setText("ws-note", d.note || "");
+  }
+
+  function renderSocial(d){
+    document.getElementById("social").innerHTML = (d.platforms || []).map(function(p){
+      return '<li tabindex="0"><div class="t">' + esc(p.platform) +
+        ' <span class="pill ' + wsPill(p.status) + '">' + esc(String(p.status).toUpperCase()) + '</span></div>' +
+        '<div class="d">' + esc(p.note || "") + '</div></li>';
+    }).join("");
+    setText("social-note", d.note || "");
+  }
+
+  function renderRevenue(d){
+    document.getElementById("rev-total").textContent = money(d.verified_received_usd);
+    document.getElementById("rev-opps").innerHTML = (d.opportunities || []).map(function(o){
+      var prize = (o.prize_usd != null) ? " · up to $" + Number(o.prize_usd).toLocaleString() : "";
+      return '<li tabindex="0"><div class="t">' + esc(o.name) +
+        ' <span class="pill ' + wsPill(o.status) + '">' + esc(String(o.status).toUpperCase()) + '</span></div>' +
+        '<div class="d">' + esc(o.type || "") + prize + ' — ' + esc(o.note || "") + '</div></li>';
+    }).join("");
+    setText("rev-note", d.rule || "");
+  }
+
+  function loadStandalone(){
+    function one(url, render, fallbackId, fallbackText){
+      fetch(url, {cache: "no-store"}).then(function(r){
+        if(!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }).then(render).catch(function(){ setText(fallbackId, fallbackText); });
+    }
+    one("data/ai-network.json", renderNetwork, "network-note", "ai-network.json not loaded");
+    one("data/workstreams.json", renderWorkstreams, "ws-note", "workstreams.json not loaded");
+    one("data/social.json", renderSocial, "social-note", "social.json not loaded");
+    one("data/revenue.json", renderRevenue, "rev-note", "revenue.json not loaded");
+  }
+
   // ---- D-pad / keyboard navigation ----
-  var SECTIONS = ["sec-brief","sec-agents","sec-earnings","sec-discoveries","sec-deadlines","sec-errors","sec-approvals"];
+  var SECTIONS = ["sec-brief","sec-agents","sec-earnings","sec-discoveries","sec-deadlines","sec-errors","sec-approvals",
+                  "sec-network","sec-workstreams","sec-social","sec-revenue"];
 
   function focusables(){
     return Array.prototype.filter.call(document.querySelectorAll("[tabindex]"), function(el){
@@ -274,21 +361,31 @@
     if(best){ best.focus(); best.scrollIntoView({block:"nearest", behavior:"smooth"}); }
   }
 
+  var digitBuf = "", digitTimer = null;
+  function jumpDigits(buf){
+    var s = document.getElementById(SECTIONS[Number(buf)]);
+    if(s){ s.focus(); s.scrollIntoView({behavior:"smooth"}); }
+  }
   document.addEventListener("keydown", function(e){
     var k = e.key;
     if(k === "ArrowLeft"){ move("left"); e.preventDefault(); }
     else if(k === "ArrowRight"){ move("right"); e.preventDefault(); }
     else if(k === "ArrowUp"){ move("up"); e.preventDefault(); }
     else if(k === "ArrowDown"){ move("down"); e.preventDefault(); }
-    else if(k >= "0" && k <= "6"){
-      var s = document.getElementById(SECTIONS[Number(k)]);
-      if(s){ s.focus(); s.scrollIntoView({behavior:"smooth"}); }
+    else if(k >= "0" && k <= "9"){
+      // buffered digits so both "7" and "10" work
+      digitBuf += k;
+      if(Number(digitBuf) >= SECTIONS.length) digitBuf = k;
+      clearTimeout(digitTimer);
+      digitTimer = setTimeout(function(){ jumpDigits(digitBuf); digitBuf = ""; }, 350);
+      e.preventDefault();
     }
-    else if(k === "r" || k === "R"){ load(); }
+    else if(k === "r" || k === "R"){ load(); loadStandalone(); }
   });
 
   load();
-  setInterval(load, REFRESH_MS);
+  loadStandalone();
+  setInterval(function(){ load(); loadStandalone(); }, REFRESH_MS);
   window.addEventListener("load", function(){
     var f = focusables(); if(f[0]) f[0].focus();
   });
