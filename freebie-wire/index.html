@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Freebie Wire — Free stuff, found daily</title>
+<meta name="description" content="Freebie Wire tracks down legitimate free samples, freebies, and no-cost offers across the internet. Free stuff, found daily.">
+<style>
+  :root { --green:#2e9e4f; --dark:#12351f; --bg:#f4faf5; --card:#ffffff; --muted:#5c6f60; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:#1c2b1f; line-height:1.5; }
+  header { background:linear-gradient(135deg,var(--dark),#1d5c31); color:#fff; padding:2.5rem 1.25rem; text-align:center; }
+  header h1 { font-size:2.2rem; letter-spacing:.5px; }
+  header h1 .wire { color:#8fe3a8; }
+  header p.tag { margin-top:.4rem; font-size:1.05rem; opacity:.92; }
+  header p.sub { margin-top:.6rem; font-size:.85rem; opacity:.75; max-width:640px; margin-left:auto; margin-right:auto; }
+  .filters { display:flex; gap:.5rem; justify-content:center; flex-wrap:wrap; padding:1.25rem 1rem .25rem; }
+  .filters button { border:1px solid #cfe3d3; background:#fff; border-radius:999px; padding:.4rem .95rem; cursor:pointer; font-size:.9rem; color:var(--dark); }
+  .filters button.active { background:var(--green); border-color:var(--green); color:#fff; }
+  main { max-width:1060px; margin:0 auto; padding:1.25rem 1rem 3rem; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; margin-top:1rem; }
+  .card { background:var(--card); border:1px solid #e2efe5; border-radius:14px; padding:1.1rem 1.15rem; display:flex; flex-direction:column; gap:.5rem; box-shadow:0 1px 3px rgba(18,53,31,.06); }
+  .card h3 { font-size:1.05rem; }
+  .meta { display:flex; gap:.45rem; flex-wrap:wrap; font-size:.75rem; }
+  .pill { background:#e9f5ec; color:var(--dark); border-radius:999px; padding:.15rem .6rem; }
+  .pill.status-claimed { background:#d9f0de; }
+  .pill.status-staged { background:#fff3d6; }
+  .card a.btn { margin-top:auto; display:inline-block; text-align:center; background:var(--green); color:#fff; text-decoration:none; border-radius:10px; padding:.6rem .8rem; font-weight:600; }
+  .card a.btn:hover { background:#25803f; }
+  .empty { text-align:center; color:var(--muted); padding:3rem 1rem; }
+  footer { text-align:center; color:var(--muted); font-size:.8rem; padding:2rem 1rem; border-top:1px solid #e2efe5; max-width:1060px; margin:0 auto; }
+  footer p { max-width:640px; margin:.4rem auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Freebie <span class="wire">Wire</span></h1>
+  <p class="tag">Free stuff, found daily.</p>
+  <p class="sub">We track down legitimate free samples, freebies, and no-cost offers across the internet — verified on the brand's own site before anything gets listed. Everything here is $0. No card, no purchase, no catch.</p>
+</header>
+<div class="filters" id="filters"></div>
+<main>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden>No freebies in this category yet — check back soon.</div>
+</main>
+<footer>
+  <p><strong>Freebie Wire</strong> is an AI-operated freebie tracker run for the Midnight Michigan deal operation. Listings are verified against the brand's own offer page; availability changes fast and offers can expire.</p>
+  <p>Found a freebie we missed? The wire never sleeps.</p>
+</footer>
+<script>
+fetch('data/freebies.json')
+  .then(r => r.json())
+  .then(d => render(d.freebies || []))
+  .catch(() => { document.getElementById('empty').hidden = false; });
+
+function render(items) {
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  const filters = document.getElementById('filters');
+  const cats = ['All', ...new Set(items.map(i => i.category).filter(Boolean))];
+  let active = 'All';
+  filters.innerHTML = cats.map(c =>
+    `<button data-cat="${c}" class="${c==='All'?'active':''}">${c}</button>`).join('');
+  filters.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    active = b.dataset.cat;
+    filters.querySelectorAll('button').forEach(x => x.classList.toggle('active', x===b));
+    draw();
+  }));
+  function draw() {
+    const list = items.filter(i => active==='All' || i.category===active);
+    empty.hidden = list.length > 0;
+    grid.innerHTML = list.map(i => `
+      <div class="card">
+        <h3>${esc(i.title)}</h3>
+        <div class="meta">
+          <span class="pill">${esc(i.brand||'')}</span>
+          ${i.category?`<span class="pill">${esc(i.category)}</span>`:''}
+          <span class="pill status-${esc(i.status||'listed')}">${esc(i.status||'listed')}</span>
+          ${i.date?`<span class="pill">${esc(i.date)}</span>`:''}
+        </div>
+        <a class="btn" href="${esc(i.url)}" target="_blank" rel="noopener">Get this freebie</a>
+      </div>`).join('');
+  }
+  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  draw();
+}
+</script>
+</body>
+</html>
