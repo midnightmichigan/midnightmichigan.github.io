@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hearthside Tools — Tiny tools that never upload your data</title>
+<meta name="description" content="Seven small browser tools that each do one job: PDFs, JSON repair, CSV dedupe, resume gaps, subscription leaks, reseller math, QR codes. No server, no uploads, no accounts. Sold as MIT-licensed source bundles, $7–$12 each or $29 for the bundle.">
+<style>
+  :root{
+    --ink:#1d2733; --muted:#5a6a7a; --paper:#fbf8f3; --card:#ffffff;
+    --line:#e6ded2; --accent:#b4552d; --accent-dark:#93431f; --ok:#2e6b34;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper);line-height:1.55}
+  a{color:var(--accent-dark)}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 20px}
+  header{padding:56px 0 30px;text-align:center}
+  .kicker{font-family:Verdana,Geneva,sans-serif;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin:0 0 14px}
+  h1{font-size:42px;line-height:1.12;margin:0 0 16px;font-weight:normal}
+  h1 strong{font-weight:bold}
+  .sub{font-size:19px;color:var(--muted);max-width:680px;margin:0 auto 26px}
+  .rule-strip{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0 auto 8px;max-width:760px}
+  .rule-strip span{font-family:Verdana,Geneva,sans-serif;font-size:13px;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:7px 14px}
+  .cta-row{margin:26px 0 4px}
+  .btn{display:inline-block;font-family:Verdana,Geneva,sans-serif;font-size:15px;text-decoration:none;border-radius:8px;padding:13px 26px;background:var(--accent);color:#fff;border:1px solid var(--accent)}
+  .btn:hover{background:var(--accent-dark)}
+  .btn.ghost{background:transparent;color:var(--accent-dark)}
+  .btn.ghost:hover{background:#f3e7dc}
+  section{padding:26px 0}
+  h2{font-size:27px;font-weight:normal;margin:0 0 8px}
+  .lede{color:var(--muted);font-size:17px;margin:0 0 22px;max-width:720px}
+  .bundle{background:var(--ink);color:#f4efe7;border-radius:14px;padding:30px 30px 26px;display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+  .bundle h2{color:#fff;margin:0 0 6px}
+  .bundle p{margin:0;color:#cfd6dd;max-width:560px;font-size:16px}
+  .bundle .math{font-family:Verdana,Geneva,sans-serif;font-size:14px;color:#fff;margin-top:12px}
+  .bundle .math s{color:#9fb0bd}
+  .price-big{font-size:44px;color:#fff;line-height:1}
+  .price-note{font-family:Verdana,Geneva,sans-serif;font-size:12.5px;color:#cfd6dd;margin-top:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+  .tool{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column}
+  .tool h3{margin:0 0 4px;font-size:21px;font-weight:bold}
+  .tool .job{font-size:16.5px;margin:0 0 10px}
+  .tool .detail{color:var(--muted);font-size:14.5px;margin:0 0 16px;flex:1}
+  .tool .foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:14px}
+  .price{font-size:22px}
+  .tests{font-family:Verdana,Geneva,sans-serif;font-size:12px;color:var(--ok)}
+  .buy{font-family:Verdana,Geneva,sans-serif;font-size:14px;text-decoration:none;background:var(--ink);color:#fff;border-radius:7px;padding:9px 18px}
+  .buy:hover{background:#000}
+  .buy.store{background:transparent;color:var(--accent-dark);border:1px solid var(--accent)}
+  .pending{font-family:Verdana,Geneva,sans-serif;font-size:12px;color:var(--accent-dark);margin-top:8px}
+  .how{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+  .how div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px}
+  .how h3{margin:0 0 6px;font-size:17px}
+  .how p{margin:0;color:var(--muted);font-size:15px}
+  .maker{background:#f3ecdf;border:1px solid var(--line);border-radius:12px;padding:26px 28px}
+  .maker p{margin:0 0 12px;font-size:16.5px}
+  .maker p:last-child{margin-bottom:0}
+  footer{padding:34px 0 46px;text-align:center;color:var(--muted);font-size:14px}
+  @media (max-width:640px){
+    header{padding:38px 0 20px}
+    h1{font-size:31px}
+    .sub{font-size:17px}
+    .bundle{padding:24px 20px}
+    .price-big{font-size:36px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kicker">Hearthside Printables</p>
+    <h1>Tiny tools that do one job each,<br><strong>and never upload your data.</strong></h1>
+    <p class="sub">Every &ldquo;free online tool&rdquo; has the same catch: paste your resume, your PDF, your customer list, or your bank statement into a stranger&rsquo;s server. These tools are the opposite. Each one is a single page that runs entirely in your browser, and you buy the complete source bundle, so your copy can never be paywalled, tracked, or shut down.</p>
+    <div class="rule-strip">
+      <span>No server</span>
+      <span>No accounts</span>
+      <span>No analytics</span>
+      <span>Works offline</span>
+      <span>MIT-licensed source</span>
+      <span>Tests included</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn" href="https://payhip.com/b/KOFuD">Get the bundle — $29</a>
+      <a class="btn ghost" href="#tools">Browse the tools</a>
+    </div>
+  </header>
+
+  <section aria-label="Bundle offer">
+    <div class="bundle">
+      <div>
+        <h2>The all-tools bundle</h2>
+        <p>All six original source bundles in one download: GapCheck, pdfdesk, FlipCheck, jsonfix, QRForge, and SubCut. Buy once, host them anywhere, use them forever.</p>
+        <p class="math"><s>$58 bought separately</s> &nbsp;→&nbsp; $29 bundled &nbsp;·&nbsp; you save $29</p>
+      </div>
+      <div>
+        <div class="price-big">$29</div>
+        <div class="price-note">one-time · no subscription</div>
+        <div class="cta-row" style="margin-top:14px">
+          <a class="btn" href="https://payhip.com/b/KOFuD">Buy the bundle</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tools">
+    <h2>The tools</h2>
+    <p class="lede">Built for the moments you would otherwise paste something private into a free web tool: a resume, a signed PDF, an API response with real data in it, a customer export, a bank statement. One job each, priced once.</p>
+    <div class="grid">
+
+      <article class="tool">
+        <h3>jsonfix</h3>
+        <p class="job">Repairs broken and AI-mangled JSON, then shows you every fix.</p>
+        <p class="detail">Validates, formats, converts (JSON &#8596; CSV), and diffs. The repair passes fix single quotes, trailing commas, markdown fences, and unquoted keys, and list each fix line by line so nothing is silently altered. <span class="tests">53 tests included</span></p>
+        <div class="foot">
+          <span class="price">$12</span>
+          <a class="buy" href="https://payhip.com/b/xjOo3">Buy jsonfix</a>
+        </div>
+      </article>
+
+      <article class="tool">
+        <h3>pdfdesk</h3>
+        <p class="job">Merge, organize, and compress PDFs with zero uploads.</p>
+        <p class="detail">Merge, reorder, rotate, extract pages, and compress. Everything happens in the browser tab, so a signed contract or a tax form never leaves your machine. Works with the Wi-Fi off.</p>
+        <div class="foot">
+          <span class="price">$12</span>
+          <a class="buy" href="https://payhip.com/b/iruUY">Buy pdfdesk</a>
+        </div>
+      </article>
+
+      <article class="tool">
+        <h3>GapCheck</h3>
+        <p class="job">See exactly which job-posting keywords your resume is missing.</p>
+        <p class="detail">Paste a job posting and your resume and get covered, partial, and missing keyword tiers, instead of dumb string matching that cries &ldquo;missing&rdquo; over words you actually have. <span class="tests">21 tests included</span></p>
+        <div class="foot">
+          <span class="price">$9</span>
+          <a class="buy" href="https://payhip.com/b/NCFE5">Buy GapCheck</a>
+        </div>
+      </article>
+
+      <article class="tool">
+        <h3>FlipCheck</h3>
+        <p class="job">Reseller math: is that thrift find actually profitable after fees?</p>
+        <p class="detail">Buy price vs sell price across 8 marketplaces, after fees and shipping, ending in a straight answer: BUY IT, NEGATIVE, or WALK AWAY. <span class="tests">32 tests included</span></p>
+        <div class="foot">
+          <span class="price">$9</span>
+          <a class="buy" href="https://payhip.com/b/N0svT">Buy FlipCheck</a>
+        </div>
+      </article>
+
+      <article class="tool">
+        <h3>SubCut</h3>
+        <p class="job">Find every recurring charge hiding in your bank statement.</p>
+        <p class="detail">Paste bank-statement text and it finds the recurring charges and totals your monthly and yearly leak, with cancel scripts for the ones you want gone. Your statement never leaves the tab.</p>
+        <div class="foot">
+          <span class="price">$9</span>
+          <a class="buy" href="https://payhip.com/b/5Uvbh">Buy SubCut</a>
+        </div>
+      </article>
+
+      <article class="tool">
+        <h3>CSVSweep</h3>
+        <p class="job">Dedupe and merge CSV lists by key, with a receipt for every row removed.</p>
+        <p class="detail">Removes exact duplicates and same-key duplicates (you pick the key, like email), merges files by column name even in different orders, and lists every removed row with its reason. Blank keys are never collapsed into each other. <span class="tests">28 tests included</span></p>
+        <div class="foot">
+          <span class="price">$9</span>
+          <a class="buy store" href="https://payhip.com/u1790829402217713798626">Find it in the store</a>
+        </div>
+        <p class="pending">Newest tool: its own store page is going up shortly, so this card links to the store front for now.</p>
+      </article>
+
+      <article class="tool">
+        <h3>QRForge</h3>
+        <p class="job">QR codes that are actually the code, not a tracking redirect.</p>
+        <p class="detail">Most &ldquo;free&rdquo; QR generators hand you a redirect that expires when the startup pivots. QRForge builds a static code in your browser: no account, no watermark, no expiry, PNG and SVG out.</p>
+        <div class="foot">
+          <span class="price">$7</span>
+          <a class="buy" href="https://payhip.com/b/E9tcI">Buy QRForge</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>How buying a &ldquo;source bundle&rdquo; works</h2>
+    <div class="how">
+      <div>
+        <h3>1. Buy once on Payhip</h3>
+        <p>One-time price, no subscription, no account needed with us. Payhip handles the checkout and the download.</p>
+      </div>
+      <div>
+        <h3>2. Get the full source</h3>
+        <p>The same single-page app, its engine, its test suite, and a README. MIT-licensed: read it, verify it, modify it.</p>
+      </div>
+      <div>
+        <h3>3. Host it anywhere, or just open it</h3>
+        <p>Drop it on GitHub Pages, Netlify, or your own site, or open it from a folder. It works offline, forever, with nobody to shut it off.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="maker">
+      <h2 style="margin-bottom:12px">A note from the maker</h2>
+      <p>Hearthside Printables is a one-person shop in Michigan. I built these tools one at a time, each after catching myself about to paste something private (an API response with real customer data, a family bank statement) into a free web tool I knew nothing about. Investigations have found most top free formatters and converters ship your paste off the device within about a second. So the rule for everything here is simple: no backend at all. The absence of a server is the feature.</p>
+      <p>Honest status: the store is up and the tools are finished and tested, and sales so far are zero. Distribution is the part I am worst at, which is partly why this page exists. No testimonials on this page, because there are no customers to quote yet. What I can show you instead is the work: every bundle ships its full test suite, so you do not have to take my word for any of it.</p>
+      <p>If you paste other people&rsquo;s data into free web tools for work, try this once: open your browser&rsquo;s developer tools, watch the Network tab while you paste, and then decide. That experiment is how this whole catalog started.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Hearthside Printables · <a href="https://payhip.com/u1790829402217713798626">payhip.com — visit the store</a></p>
+    <p>All tools are sold as MIT-licensed source bundles via Payhip. Prices in USD, one-time.</p>
+  </footer>
+
+</div>
+</body>
+</html>
