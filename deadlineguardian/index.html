@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeadlineGuardian — offline paperwork triage</title>
+<style>
+  :root{--ink:#1c2333;--mut:#5a6478;--line:#d7dce6;--bg:#f6f7fa;--card:#fff;--high:#b00020;--med:#b26a00;--low:#2e7d32}
+  *{box-sizing:border-box} body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);margin:0}
+  main{max-width:820px;margin:0 auto;padding:2rem 1rem 3rem}
+  h1{margin:.2rem 0;font-size:1.9rem} .sub{color:var(--mut);margin:.2rem 0 1.2rem;line-height:1.5}
+  .badge{display:inline-block;background:#e8f5e9;border:1px solid #a5d6a7;color:#256029;border-radius:999px;padding:.15rem .6rem;font-size:.8rem;margin-right:.4rem}
+  textarea{width:100%;min-height:150px;padding:.8rem;border:1px solid var(--line);border-radius:10px;font:inherit;background:var(--card)}
+  .row{display:flex;flex-wrap:wrap;gap:.5rem;margin:.7rem 0}
+  button{font:inherit;padding:.55rem 1.1rem;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer}
+  button.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+  button.sample{background:var(--card);color:var(--ink);border-color:var(--line);font-size:.85rem;padding:.4rem .7rem}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem 1.2rem;margin-top:1rem}
+  .summary{font-weight:700;font-size:1.05rem}
+  .urg-high{color:var(--high);font-weight:700}.urg-medium{color:var(--med);font-weight:700}.urg-low{color:var(--low);font-weight:700}
+  .bar{height:8px;background:#eceff4;border-radius:99px;overflow:hidden;margin:.3rem 0 .6rem}
+  .bar>i{display:block;height:100%;background:#3d6fe0}
+  .chips span{display:inline-block;background:#eef2f9;border:1px solid var(--line);border-radius:999px;padding:.1rem .55rem;font-size:.8rem;margin:.15rem .2rem .15rem 0}
+  .k{color:var(--mut);font-size:.85rem;text-transform:uppercase;letter-spacing:.04em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.6rem 1.2rem;margin:.5rem 0}
+  footer{color:var(--mut);font-size:.85rem;margin-top:2rem;line-height:1.5}
+  @media print{.row,textarea,footer{display:none}}
+</style>
+</head>
+<body>
+<main>
+  <h1>🛡️ DeadlineGuardian</h1>
+  <p class="sub">Paste a bill, notice, or letter. DeadlineGuardian tells you what it is, how urgent it is,
+  what date and amount matter, and the one next action to take.</p>
+  <p><span class="badge">100% offline</span><span class="badge">No account</span><span class="badge">No API key</span><span class="badge">Nothing leaves this page</span></p>
+
+  <div class="row" role="group" aria-label="Sample documents">
+    <button class="sample" data-sample="0">Sample: past-due electric bill</button>
+    <button class="sample" data-sample="1">Sample: benefits renewal</button>
+    <button class="sample" data-sample="2">Sample: court summons</button>
+    <button class="sample" data-sample="3">Sample: property tax</button>
+    <button class="sample" data-sample="4">Sample: clinic reminder</button>
+    <button class="sample" data-sample="5">Sample: newsletter</button>
+  </div>
+
+  <label class="k" for="in">Your document (for a batch, separate documents with a line containing only ---)</label>
+  <textarea id="in" placeholder="Your electric bill: amount due $90.00, payment due December 18, 2026. Past due notice."></textarea>
+  <div class="row">
+    <button id="go">Triage it</button>
+    <button id="clear" class="ghost">Clear</button>
+    <button id="print" class="ghost">Print / save result</button>
+  </div>
+  <div id="out" aria-live="polite"></div>
+
+  <footer>
+    DeadlineGuardian uses a deterministic, rule-based NLP engine — keyword-signal classification plus
+    date and amount extraction — that runs entirely in your browser. It is not a large language model
+    and it never sends your text anywhere. Always confirm deadlines against the original document.
+  </footer>
+</main>
+<script src="triage.js"></script>
+<script>
+const SAMPLES = [
+  "Final notice: your electric bill is past due. Amount due $90.00, payment due December 18, 2026. Service may be disconnected after that date.",
+  "SNAP redetermination: return your renewal notice with verification by November 30, 2026 to keep your food assistance.",
+  "You are summoned to court for a hearing on 01/05/2027, case no. 26-123. Please bring identification.",
+  "Property tax notice from the treasurer: $1,200 due 02/14/2027.",
+  "Clinic appointment reminder: your prescription refill appointment is confirmed. Please bring your referral paperwork.",
+  "A friendly newsletter with no dates or requests."
+];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+document.querySelectorAll(".sample").forEach(b => b.onclick = () => { $("in").value = SAMPLES[+b.dataset.sample]; $("go").click(); });
+$("clear").onclick = () => { $("in").value = ""; $("out").innerHTML = ""; };
+$("print").onclick = () => window.print();
+function card(t, title) {
+  const days = t.days_until === null ? "" :
+    `<div><span class="k">Days left</span><br><b>${t.days_until < 0 ? Math.abs(t.days_until) + " day(s) overdue" : t.days_until}</b></div>`;
+  return `<div class="card">${title ? `<div class="k">${esc(title)}</div>` : ""}
+    <div class="summary">${esc(t.summary)}</div>
+    <div class="grid">
+      <div><span class="k">Category</span><br><b>${esc(LABELS[t.category] || t.category)}</b></div>
+      <div><span class="k">Urgency</span><br><span class="urg-${t.urgency}">${esc(t.urgency.toUpperCase())}</span></div>
+      <div><span class="k">Due dates</span><br>${t.due_dates.map(esc).join(", ") || "none found"}</div>
+      ${days}
+      <div><span class="k">Amounts</span><br>${t.amounts.map(a => "$" + esc(a)).join(", ") || "none found"}</div>
+    </div>
+    <span class="k">Confidence</span>
+    <div class="bar"><i style="width:${Math.round(t.confidence * 100)}%"></i></div>
+    <div><span class="k">Why — matched signals</span><br>
+      <span class="chips">${t.signals.length ? t.signals.map(s => `<span>${esc(s)}</span>`).join("") : "<span>no category signals — treated as a general notice</span>"}</span></div>
+    <p><span class="k">When</span><br>${esc(t.recommended_window)}</p>
+    <p><span class="k">Next action</span><br><b>${esc(t.action)}</b></p>
+  </div>`;
+}
+$("go").onclick = () => {
+  const raw = $("in").value.trim();
+  if (!raw) { $("out").innerHTML = `<div class="card">Paste a document first — or pick a sample above.</div>`; return; }
+  const docs = raw.split(/\n---\n/).map(d => d.trim()).filter(Boolean);
+  if (docs.length > 1) {
+    const results = triageMany(docs);
+    const s = summarizeBatch(results);
+    $("out").innerHTML =
+      `<div class="card"><div class="summary">Batch: ${s.total} documents — ${s.high} high, ${s.medium} medium, ${s.low} low urgency (sorted most urgent first).</div></div>` +
+      results.map((t, i) => card(t, "Document " + (i + 1))).join("");
+  } else {
+    $("out").innerHTML = card(classify(raw));
+  }
+};
+</script>
+</body>
+</html>
